@@ -3,15 +3,6 @@
   "buildCommand": "pnpm build",
   "devCommand": "pnpm start:dev",
   "installCommand": "pnpm install --legacy-peer-deps",
-  "builds": [
-    {
-      "src": "src/main.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["dist/**", "node_modules/**"]
-      }
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
