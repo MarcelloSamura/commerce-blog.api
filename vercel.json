@@ -1,7 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run start:dev",
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm start:dev",
+  "installCommand": "pnpm install",
   "builds": [
     {
       "src": "package.json",
