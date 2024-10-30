@@ -2,11 +2,12 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/main.ts",
+      "src": "package.json",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["dist/**", "node_modules/**"]
-      }
+      },
+      "buildCommand": "npm run build"
     }
   ],
   "routes": [
