@@ -3,11 +3,5 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run start:dev",
   "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": "dist",
-  "builds": [
-    {
-      "src": "dist/main.js",
-      "use": "@vercel/node"
-    }
-  ]
+  "outputDirectory": "dist"
 }
