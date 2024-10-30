@@ -9,6 +9,10 @@
       "src": "/(.*)",
       "dest": "dist/main.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
+    },
+    {
+      "src": "/server",
+      "dest": "dist/main.js"
     }
   ]
 }
