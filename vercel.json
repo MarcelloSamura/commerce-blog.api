@@ -3,6 +3,7 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run start:dev",
   "installCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": "dist",
   "routes": [
     {
       "src": "/(.*)",
