@@ -12,7 +12,9 @@ export const stringSchema = z.string().trim();
 export const emailStringSchema = stringSchema.email();
 export const urlStringSchema = stringSchema.url();
 export const uuidSchema = stringSchema.uuid();
-export const orderParamSchema = z.enum(['ASC', 'DESC']);
+export const sortSchema = z
+  .string()
+  .regex(/^.+\.(ASC|DESC|asc|desc)$/, 'Formato inválido');
 export const genderStringSchema = z.enum(['M', 'F']);
 export const integerNumberSchema = numberSchema.int();
 export const floatNumberSchema = numberSchema
@@ -126,6 +128,8 @@ export const optionalPaginationParamSchema = createNullableTransform(
   paginationParamSchema,
 );
 
+export const optionalSortSchema = createNullableTransform(sortSchema);
+
 export const optionalTimeStringSchema =
   createNullableTransform(timeStringSchema);
 
@@ -142,11 +146,6 @@ export const optionalBooleanStringSchema =
   createNullableTransform(booleanStringSchema);
 
 export const optionalBooleanSchema = createNullableTransform(booleanSchema);
-
-export const optionalOrderParamSchema =
-  createNullableTransform(orderParamSchema);
-
-export type OrderBy = z.infer<typeof optionalOrderParamSchema>;
 
 export const optionalGenderStringSchema =
   createNullableTransform(genderStringSchema);

@@ -1,13 +1,13 @@
-import { ApiTags } from '@nestjs/swagger';
 import {
   Body,
-  Controller,
   Delete,
   Get,
   Post,
   Put,
   Query,
+  Controller,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 
 import { Public } from 'src/shared/decorators/auth.decorator';
 import { UuidParam } from 'src/shared/decorators/uuid-param.decorator';
@@ -27,6 +27,7 @@ export class UserController {
 
   @Public()
   @ApiPaginationQuery()
+  @DataBaseInterceptorDecorator()
   @Get('paginate')
   async paginate(@Query() querys: PaginateUsersDTO) {
     return this.userService.paginateUsers(querys);

@@ -2,8 +2,6 @@ import { ApiQuery, type ApiQueryOptions } from '@nestjs/swagger';
 
 import { IS_DEV_ENV } from 'src/config/env.config';
 
-import { OrderByEnum } from '../enums.shared';
-
 export type Params = ApiQueryOptions[];
 
 export function ApiPaginationQuery(
@@ -32,19 +30,10 @@ export function ApiPaginationQuery(
 
     if (!hideOrderBy) {
       ApiQuery({
-        type: 'enum',
-        description: 'Order By Created At',
+        description: 'Sort field',
         required: false,
-        name: 'order_by_created_at',
-        enum: OrderByEnum,
-      })(target, key, descriptor);
-
-      ApiQuery({
-        type: 'enum',
-        description: 'Order By Updated At',
-        required: false,
-        name: 'order_by_updated_at',
-        enum: OrderByEnum,
+        name: 'sort',
+        schema: { example: 'column_name.ASC' },
       })(target, key, descriptor);
     }
 

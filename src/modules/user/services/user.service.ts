@@ -38,7 +38,7 @@ export class UserService {
     page,
     user_name,
     user_email,
-    ...orderBy
+    sort
   }: PaginateUsersPayload) {
     const queryBuilder = this.createUserQueryBuilder();
 
@@ -49,7 +49,7 @@ export class UserService {
       { user_name: 'LIKE', user_email: '=' },
     );
 
-    applyOrderByFilters(alias, queryBuilder, orderBy);
+    applyOrderByFilters(alias, queryBuilder, sort);
 
     return this.paginationService.paginateWithQueryBuilder(queryBuilder, {
       limit,

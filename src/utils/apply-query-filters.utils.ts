@@ -1,7 +1,5 @@
 import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
-import type { OrderBy } from 'src/shared/schemas.shared';
-
 import { isNullableValue } from './is-nullable-value.util';
 
 export type FilterTypes = 'LIKE' | '=' | '<' | '>' | '<=' | '>=';
@@ -53,22 +51,26 @@ export function applyQueryFilters<
   return queryBuilder;
 }
 
-export type OrderByParams = Record<`order_by_${string}`, OrderBy>;
+type OrderBy = 'ASC' | 'DESC' | 'asc' | 'desc';
+
+export type Order<E extends ObjectLiteral> =
+  | `${Extract<keyof E, string | number>}.${OrderBy}`
+  | string;
 
 export function applyOrderByFilters<T extends string, E extends ObjectLiteral>(
   alias: T,
   queryBuilder: SelectQueryBuilder<E>,
-  filters: OrderByParams,
+  sort: Maybe<Order<E>>,
 ) {
-  if (Object.values(filters).every((value) => !value)) return;
+  if (!sort) return;
 
-  for (const [key, value] of Object.entries(filters)) {
-    if (!key.startsWith('order_by_')) throw new Error();
+  const [column, order] = sort.split('.') as [
+    Extract<keyof E, string | number>,
+    OrderBy,
+  ];
 
-    const column = key.replace('order_by_', '');
-
-    if (value) queryBuilder.orderBy(`${alias}.${column}`, value);
-  }
-
-  return queryBuilder;
+  queryBuilder.orderBy(
+    `${alias}.${column}`,
+    order.toUpperCase() as 'ASC' | 'DESC',
+  );
 }

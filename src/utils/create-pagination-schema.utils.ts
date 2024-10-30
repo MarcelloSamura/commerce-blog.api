@@ -1,7 +1,7 @@
 import { type ZodRawShape, z } from 'zod';
 
 import {
-  optionalOrderParamSchema,
+  optionalSortSchema,
   optionalPaginationParamSchema,
 } from 'src/shared/schemas.shared';
 
@@ -12,8 +12,7 @@ export function createPaginationSchema<T extends ZodRawShape>(fields: T) {
   const paginationSchema = z.object({
     page: pageSchema,
     limit: limitSchema,
-    order_by_created_at: optionalOrderParamSchema,
-    order_by_updated_at: optionalOrderParamSchema,
+    sort: optionalSortSchema,
     ...fields,
   });
 
