@@ -6,11 +6,7 @@ import {
   runSeeder,
 } from 'typeorm-extension';
 
-import {
-  UserSeeder,
-  ProfessionCategorySeeder,
-  ProfessionSeeder,
-} from './seeders';
+import { UserSeeder } from './seeders';
 
 export class MainSeeder implements Seeder {
   track?: boolean | undefined = true;
@@ -20,7 +16,5 @@ export class MainSeeder implements Seeder {
     _factoryManager: SeederFactoryManager,
   ): Promise<void> {
     await runSeeder(dataSource, UserSeeder);
-    await runSeeder(dataSource, ProfessionCategorySeeder);
-    await runSeeder(dataSource, ProfessionSeeder);
   }
 }

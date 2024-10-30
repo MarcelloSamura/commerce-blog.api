@@ -1,3 +1,5 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import {
@@ -7,7 +9,6 @@ import {
 import { PaginationService } from 'src/lib/pagination/pagination.service';
 import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
-import { userRepository } from '../repositories/user.repository';
 import type { CreateUserPayload } from '../dtos/create-user.dto';
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
 import { User, alias, base_fields } from '../entities/user.entity';
@@ -15,10 +16,13 @@ import type { PaginateUsersPayload } from '../dtos/paginate-users.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly paginationService: PaginationService) {}
+  constructor(
+    private readonly paginationService: PaginationService,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
 
   private createUserQueryBuilder(selectPassword?: boolean) {
-    const baseQueryBuilder = userRepository.createQueryBuilder(alias);
+    const baseQueryBuilder = this.userRepository.createQueryBuilder(alias);
 
     if (selectPassword) {
       baseQueryBuilder.select([...base_fields, `${alias}.hashed_password`]);
@@ -76,7 +80,7 @@ export class UserService {
   async createUser(payload: CreateUserPayload) {
     const userToCreate = await User.create(payload);
 
-    return userRepository.save(userToCreate);
+    return this.userRepository.save(userToCreate);
   }
 
   async updateUser(
@@ -90,7 +94,7 @@ export class UserService {
 
     const userItem = await User.update(payload, userToUpdate.hashed_password);
 
-    await userRepository.update(userToUpdate.id, userItem);
+    await this.userRepository.update(userToUpdate.id, userItem);
 
     return this.getUserById(userToUpdate.id);
   }
@@ -100,7 +104,7 @@ export class UserService {
 
     this.checkUserPermission(userToDelete.id, logged_in_user_id);
 
-    return userRepository.delete(userToDelete.id);
+    return this.userRepository.delete(userToDelete.id);
   }
 
   private checkUserPermission(incoming_id: string, logged_in_user_id: string) {

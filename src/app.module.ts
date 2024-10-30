@@ -1,19 +1,21 @@
+import { Module } from '@nestjs/common';
 import { APP_PIPE } from '@nestjs/core';
 import { ZodValidationPipe } from 'nestjs-zod';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
-import { Module, type OnModuleInit } from '@nestjs/common';
 
 import { LogModule } from './lib/log/log.module';
-import { ConciergeModule } from './modules/concierge.module';
-import { AppDataSource } from './lib/database/database.providers';
+import { options } from './lib/database/database.providers';
+import { CommerceBlogModule } from './modules/concierge.module';
 import { PaginationModule } from './lib/pagination/pagination.module';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    ConciergeModule,
+    CommerceBlogModule,
     PaginationModule,
     LogModule,
+    TypeOrmModule.forRoot(options),
   ],
   providers: [
     {
@@ -22,12 +24,4 @@ import { PaginationModule } from './lib/pagination/pagination.module';
     },
   ],
 })
-export class AppModule implements OnModuleInit {
-  async onModuleInit() {
-    try {
-      await AppDataSource.initialize();
-    } catch (err) {
-      throw err;
-    }
-  }
-}
+export class AppModule {}

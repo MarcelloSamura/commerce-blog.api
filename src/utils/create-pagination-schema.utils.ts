@@ -1,4 +1,4 @@
-import { type ZodRawShape, z } from 'nestjs-zod/z';
+import { type ZodRawShape, z } from 'zod';
 
 import {
   optionalOrderParamSchema,
