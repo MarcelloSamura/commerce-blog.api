@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "pnpm build",
   "devCommand": "pnpm start:dev",
-  "installCommand": "pnpm install --legacy-peer-deps",
+  "installCommand": "pnpm install",
   "routes": [
     {
       "src": "/(.*)",
