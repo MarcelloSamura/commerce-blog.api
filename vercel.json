@@ -4,10 +4,10 @@
   "devCommand": "npm run start:dev",
   "installCommand": "npm install --legacy-peer-deps",
   "outputDirectory": "dist",
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/dist/main.js"
+      "src": "dist/main.js",
+      "use": "@vercel/node"
     }
   ]
 }
