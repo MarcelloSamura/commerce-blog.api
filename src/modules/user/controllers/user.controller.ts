@@ -11,7 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Public } from 'src/shared/decorators/auth.decorator';
 import { UuidParam } from 'src/shared/decorators/uuid-param.decorator';
-import { DecodedToken } from 'src/shared/decorators/decoded-token.decorator';
+import { LoggedInUserIdDecorator } from 'src/shared/decorators/logged-in-user-id.decorator';
 import { ApiPaginationQuery } from 'src/shared/decorators/api-pagination-query.decorator';
 import { DataBaseInterceptorDecorator } from 'src/shared/decorators/database-interceptor.decorator';
 
@@ -51,16 +51,16 @@ export class UserController {
   async update(
     @UuidParam('id') id: string,
     @Body() payload: UpdateUserDTO,
-    @DecodedToken() decoded_token: DecodedTokenType,
+    @LoggedInUserIdDecorator() logged_in_user_id: string,
   ) {
-    return this.userService.updateUser(id, payload, decoded_token.id);
+    return this.userService.updateUser(id, payload, logged_in_user_id);
   }
 
   @Delete(':id')
   async delete(
     @UuidParam('id') id: string,
-    @DecodedToken() decoded_token: DecodedTokenType,
+    @LoggedInUserIdDecorator() logged_in_user_id: string,
   ) {
-    return this.userService.deleteUser(id, decoded_token.id);
+    return this.userService.deleteUser(id, logged_in_user_id);
   }
 }

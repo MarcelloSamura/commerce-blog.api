@@ -36,18 +36,15 @@ export class UserService {
   async paginateUsers({
     limit,
     page,
-    user_name,
-    user_email,
-    sort
+    sort,
+    ...userPayload
   }: PaginateUsersPayload) {
     const queryBuilder = this.createUserQueryBuilder();
 
-    applyQueryFilters(
-      alias,
-      queryBuilder,
-      { user_name, user_email },
-      { user_name: 'LIKE', user_email: '=' },
-    );
+    applyQueryFilters(alias, queryBuilder, userPayload, {
+      user_name: 'LIKE',
+      user_email: '=',
+    });
 
     applyOrderByFilters(alias, queryBuilder, sort);
 
@@ -94,9 +91,7 @@ export class UserService {
 
     const userItem = await User.update(payload, userToUpdate.hashed_password);
 
-    await this.userRepository.update(userToUpdate.id, userItem);
-
-    return this.getUserById(userToUpdate.id);
+    return this.userRepository.update(userToUpdate.id, userItem);
   }
 
   async deleteUser(id: string, logged_in_user_id: string) {
