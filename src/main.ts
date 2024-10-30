@@ -18,7 +18,7 @@ async function bootstrap() {
       origin: corsConfig.allowedDomains,
     });
     app.enableShutdownHooks();
-    app.setGlobalPrefix('server');
+    // app.setGlobalPrefix('server');
 
     /**
      * -----------------------------------------------------------------------------
