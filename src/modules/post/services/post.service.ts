@@ -1,5 +1,10 @@
 import { Repository } from 'typeorm';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import {
@@ -7,6 +12,7 @@ import {
   applyOrderByFilters,
 } from 'src/utils/apply-query-filters.utils';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
+import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
 import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
@@ -24,6 +30,8 @@ import type { PaginatePostsPayload } from '../dtos/paginate-posts.dto';
 export class PostService {
   constructor(
     private readonly paginationService: PaginationService,
+    @Inject(forwardRef(() => PostLikeService))
+    private readonly postLikeService: PostLikeService,
     @InjectRepository(Post) private readonly postRepository: Repository<Post>,
   ) {}
 
@@ -60,10 +68,18 @@ export class PostService {
 
     applyOrderByFilters(alias, queryBuilder, sort);
 
-    return this.paginationService.paginateWithQueryBuilder(queryBuilder, {
-      limit,
-      page,
-    });
+    const { items, meta } =
+      await this.paginationService.paginateWithQueryBuilder(queryBuilder, {
+        limit,
+        page,
+      });
+
+    if (!logged_in_user_id) return { items, meta };
+
+    return {
+      meta,
+      items: await this.addIsLikedByCurrentUserToPost(items, logged_in_user_id),
+    };
   }
 
   async getPostById(id: string, usePerfomaticSelect = false): Promise<Post> {
@@ -74,6 +90,28 @@ export class PostService {
     if (!post) throw new NotFoundError('Post não encotrado');
 
     return post;
+  }
+
+  private async addIsLikedByCurrentUserToPost(
+    posts: Post[],
+    logged_in_user_id: string,
+  ): Promise<(Post & { is_liked_by_current_user: boolean })[]> {
+    if (!posts.length) return [];
+
+    const postsIds = new Array(...new Set(posts.map((post) => post.id)));
+    const postLikes = await this.postLikeService.getPostLikesByPostIdsAndUserId(
+      postsIds,
+      logged_in_user_id,
+    );
+
+    const postLikesIdsSet = new Set(
+      postLikes.map((postLike) => postLike.post_id),
+    );
+
+    return posts.map((post) => ({
+      ...post,
+      is_liked_by_current_user: postLikesIdsSet.has(post.id),
+    }));
   }
 
   async createPost(

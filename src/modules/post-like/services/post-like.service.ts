@@ -67,9 +67,14 @@ export class PostLikeService {
     });
   }
 
-  async getPostLikesByUserIds(user_ids: string[]) {
+  async getPostLikesByPostIdsAndUserId(
+    post_ids: string[],
+    logged_in_user_id: string,
+  ) {
     const postLikes = await this.createPostLikesQueryBuilder()
-      .where(`${alias}.user_id IN (:...user_ids)`, { user_ids })
+      .where(`${alias}.post_id IN (:...post_ids)`, { post_ids })
+      .andWhere(`${alias}.user_id = :logged_in_user_id`, { logged_in_user_id })
+      .take(post_ids.length)
       .getMany();
 
     return postLikes;
@@ -113,7 +118,11 @@ export class PostLikeService {
 
     if (wasPostLiked) throw new ForbiddenException('Já gostou do post');
 
-    const post = await this.postService.getPostById(post_id);
+    const post = await this.postService.getPostById(post_id, true);
+
+    if (post.author_id === logged_in_user_id) {
+      throw new ForbiddenException('Não pode gostar do próprio post');
+    }
 
     const [savedPostLike] = await Promise.all([
       this.postLikeRepository.save(
