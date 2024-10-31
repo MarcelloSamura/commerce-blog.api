@@ -11,11 +11,11 @@ import { PaginationModule } from './lib/pagination/pagination.module';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot(options),
     ScheduleModule.forRoot(),
     CommerceBlogModule,
     PaginationModule,
     LogModule,
-    TypeOrmModule.forRoot(options),
   ],
   providers: [
     {

@@ -4,8 +4,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
 import { HealthModule } from './health/health.module';
+import { PostLikeModule } from './post-like/post-like.module';
 
 @Module({
-  imports: [UserModule, AuthModule, HealthModule, PostModule],
+  imports: [UserModule, AuthModule, HealthModule, PostModule, PostLikeModule],
 })
 export class CommerceBlogModule {}

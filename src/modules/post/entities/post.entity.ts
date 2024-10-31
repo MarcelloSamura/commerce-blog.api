@@ -1,7 +1,15 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 
 import { Base } from 'src/lib/database/entities/base.entity';
 import { User } from 'src/modules/user/entities/user.entity';
+import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
 
 import type { CreatePostPayload } from '../dtos/create-post.dto';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';
@@ -35,6 +43,9 @@ export class Post extends Base {
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: 'author_id' })
   author: User;
+
+  @OneToMany(() => PostLike, (postLike) => postLike.post)
+  likes: PostLike[];
 
   static create(payload: CreatePostPayload & { author_id: string }) {
     const item = new Post();

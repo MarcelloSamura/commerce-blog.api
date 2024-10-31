@@ -2,6 +2,7 @@ import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { Base } from 'src/lib/database/entities/base.entity';
 import { Post } from 'src/modules/post/entities/post.entity';
+import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
 import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
 
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
@@ -29,6 +30,9 @@ export class User extends Base {
 
   @OneToMany(() => Post, (post) => post.author)
   posts: Post[];
+
+  @OneToMany(() => PostLike, (post) => post.user)
+  liked_posts: PostLike[];
 
   private static async handleCreateHashedPassword(
     password: string,

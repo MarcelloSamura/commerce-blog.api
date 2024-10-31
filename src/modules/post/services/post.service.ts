@@ -27,21 +27,20 @@ export class PostService {
     @InjectRepository(Post) private readonly postRepository: Repository<Post>,
   ) {}
 
-  private createPerfomaticPostQueryBuilder() {
-    return this.postRepository
-      .createQueryBuilder(alias)
-      .select(base_pagination_fields);
-  }
+  private createPostQueryBuilder(usePerfomaticSelect = true) {
+    const baseQueryBuilder = this.postRepository.createQueryBuilder(alias);
 
-  private createFullPostQueryBuilder() {
-    return this.postRepository
-      .createQueryBuilder(alias)
-      .leftJoinAndSelect(`${alias}.${authorAlias}`, authorAlias)
-      .select(full_select_fields);
+    if (!usePerfomaticSelect) {
+      return baseQueryBuilder
+        .leftJoinAndSelect(`${alias}.${authorAlias}`, authorAlias)
+        .select(full_select_fields);
+    }
+
+    return baseQueryBuilder.select(base_pagination_fields);
   }
 
   private checkPermission(post: Post, logged_in_user_id: string) {
-    const postAuthorId = post.author_id || post.author.id;
+    const postAuthorId = post?.author_id || post.author.id;
 
     if (postAuthorId !== logged_in_user_id) {
       throw new ForbiddenException('Não pode alterar um post que não é seu');
@@ -52,7 +51,7 @@ export class PostService {
     { limit, page, sort, ...rest }: PaginatePostsPayload,
     logged_in_user_id?: string,
   ) {
-    const queryBuilder = this.createPerfomaticPostQueryBuilder();
+    const queryBuilder = this.createPostQueryBuilder();
 
     applyQueryFilters(alias, queryBuilder, rest, {
       author_id: '=',
@@ -67,18 +66,14 @@ export class PostService {
     });
   }
 
-  async getPostById(id: string, usePerfomaticSelect = true): Promise<Post> {
-    const post = this[
-      usePerfomaticSelect
-        ? 'createPerfomaticPostQueryBuilder'
-        : 'createFullPostQueryBuilder'
-    ]()
+  async getPostById(id: string, usePerfomaticSelect = false): Promise<Post> {
+    const post = await this.createPostQueryBuilder(usePerfomaticSelect)
       .where(`${alias}.id = :id`, { id })
       .getOne();
 
     if (!post) throw new NotFoundError('Post não encotrado');
 
-    return post as unknown as Post;
+    return post;
   }
 
   async createPost(
@@ -88,6 +83,20 @@ export class PostService {
     const postToCreate = Post.create({ ...payload, author_id });
 
     return this.postRepository.save(postToCreate);
+  }
+
+  async updateCounts(
+    post: Post,
+    key: 'likes_count' | 'comments_count',
+    type: CountHandler,
+  ) {
+    if (post[key] === 0 && type === 'decrement') return;
+
+    post[key] += type === 'increment' ? +1 : -1;
+
+    return this.postRepository.update(post.id, {
+      [key]: post[key],
+    });
   }
 
   async updatePost(id: string, payload: UpdatePostPayload, author_id: string) {
