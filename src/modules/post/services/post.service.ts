@@ -92,7 +92,7 @@ export class PostService {
   ) {
     if (post[key] === 0 && type === 'decrement') return;
 
-    post[key] += type === 'increment' ? +1 : -1;
+    post[key] += type === 'increment' ? 1 : -1;
 
     return this.postRepository.update(post.id, {
       [key]: post[key],
