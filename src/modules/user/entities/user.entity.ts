@@ -1,6 +1,7 @@
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 import { Base } from 'src/lib/database/entities/base.entity';
+import { Post } from 'src/modules/post/entities/post.entity';
 import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
 
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
@@ -25,6 +26,9 @@ export class User extends Base {
 
   @Column('date', { nullable: true })
   date_of_birth: NullableValue<string>;
+
+  @OneToMany(() => Post, (post) => post.author)
+  posts: Post[];
 
   private static async handleCreateHashedPassword(
     password: string,

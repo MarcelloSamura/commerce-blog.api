@@ -6,7 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 
 import { LogModule } from './lib/log/log.module';
 import { options } from './lib/database/database.providers';
-import { CommerceBlogModule } from './modules/concierge.module';
+import { CommerceBlogModule } from './modules/commerce-blog.module';
 import { PaginationModule } from './lib/pagination/pagination.module';
 
 @Module({

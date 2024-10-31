@@ -28,6 +28,11 @@ declare global {
 
   export type CountHandler = readonly 'increment' | 'decrement';
 
+  export type RemovePrefix<
+    T extends string,
+    Prefix extends string,
+  > = T extends `${Prefix}${infer Rest}` ? Rest : T;
+
   export interface IJwtPayload {
     id: string;
   }
