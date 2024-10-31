@@ -12,9 +12,9 @@ export const stringSchema = z.string().trim();
 export const emailStringSchema = stringSchema.email();
 export const urlStringSchema = stringSchema.url();
 export const uuidSchema = stringSchema.uuid();
-export const sortSchema = z
-  .string()
-  .regex(/^.+\.(ASC|DESC|asc|desc)$/, 'Formato inválido');
+export const sortSchema = stringSchema
+  .regex(/^.+\.(ASC|DESC|asc|desc)$/, 'Formato inválido')
+  .transform((val) => val as `${string}.${'ASC' | 'DESC' | 'asc' | 'desc'}`);
 export const genderStringSchema = z.enum(['M', 'F']);
 export const integerNumberSchema = numberSchema.int();
 export const floatNumberSchema = numberSchema

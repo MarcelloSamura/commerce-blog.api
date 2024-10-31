@@ -33,7 +33,7 @@ export function ApiPaginationQuery(
         description: 'Sort field',
         required: false,
         name: 'sort',
-        schema: { example: 'column_name.ASC' },
+        schema: { example: 'created_at.ASC' },
       })(target, key, descriptor);
     }
 

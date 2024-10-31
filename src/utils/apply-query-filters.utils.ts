@@ -69,6 +69,14 @@ export function applyOrderByFilters<T extends string, E extends ObjectLiteral>(
     OrderBy,
   ];
 
+  if (
+    !queryBuilder.expressionMap.mainAlias?.metadata.findColumnWithPropertyPath(
+      column as string,
+    )
+  ) {
+    return;
+  }
+
   queryBuilder.orderBy(
     `${alias}.${column}`,
     order.toUpperCase() as 'ASC' | 'DESC',

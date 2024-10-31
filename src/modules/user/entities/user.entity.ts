@@ -1,4 +1,4 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Column, Entity, Index } from 'typeorm';
 
 import { Base } from 'src/lib/database/entities/base.entity';
 import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
