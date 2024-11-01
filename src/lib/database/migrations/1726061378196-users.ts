@@ -26,6 +26,7 @@ export class Users1726061378196 implements MigrationInterface {
             name: 'user_photo_url',
             type: 'varchar',
             isUnique: true,
+            isNullable: true,
           },
           {
             name: 'phone_number',

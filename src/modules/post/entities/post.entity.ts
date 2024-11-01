@@ -48,7 +48,7 @@ export class Post extends Base {
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   likes: PostLike[];
 
-  @OneToMany(() => PostComment, (postComment) => postComment.post)
+  @OneToMany(() => PostComment, (comment) => comment.post)
   comments: PostComment[];
 
   static create(payload: CreatePostPayload & { author_id: string }) {

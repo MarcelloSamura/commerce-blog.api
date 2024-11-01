@@ -13,7 +13,10 @@ import {
 } from 'src/utils/apply-query-filters.utils';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
 import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
-import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
+import {
+  commented_by_alias,
+  PostComment,
+} from 'src/modules/post-comment/entities/post-comment.entity';
 import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
@@ -43,17 +46,6 @@ export class PostService {
     if (!usePerfomaticSelect) {
       return baseQueryBuilder
         .leftJoinAndSelect(`${alias}.${authorAlias}`, authorAlias)
-        .leftJoinAndSelect(
-          (qb) =>
-            qb
-              .subQuery()
-              .select('postComment')
-              .from(PostComment, 'postComment')
-              .where('postComment.post_id = post.id')
-              .orderBy('postComment.created_at', 'DESC')
-              .limit(5),
-          commentAlias,
-        )
         .select(full_select_fields);
     }
 
@@ -96,9 +88,25 @@ export class PostService {
   }
 
   async getPostById(id: string, usePerfomaticSelect = false): Promise<Post> {
-    const post = await this.createPostQueryBuilder(usePerfomaticSelect)
-      .where(`${alias}.id = :id`, { id })
-      .getOne();
+    const queryBuilder = this.createPostQueryBuilder(usePerfomaticSelect).where(
+      `${alias}.id = :id`,
+      { id },
+    );
+
+    if (!usePerfomaticSelect) {
+      queryBuilder
+        .leftJoinAndSelect(`${alias}.comments`, commentAlias)
+        .limit(5)
+        .addSelect([
+          `${commentAlias}.id`,
+          `${commentAlias}.content`,
+          `${commentAlias}.created_at`,
+          `${commentAlias}.parent_id`,
+          `${commentAlias}.commented_by_id`,
+        ]);
+    }
+
+    const post = await queryBuilder.getOne();
 
     if (!post) throw new NotFoundError('Post não encotrado');
 
