@@ -13,6 +13,7 @@ import {
 } from 'src/utils/apply-query-filters.utils';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
 import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
+import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
 import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
@@ -21,6 +22,7 @@ import {
   authorAlias,
   full_select_fields,
   base_pagination_fields,
+  commentAlias,
 } from '../entities/post.entity';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';
 import type { CreatePostPayload } from '../dtos/create-post.dto';
@@ -41,6 +43,17 @@ export class PostService {
     if (!usePerfomaticSelect) {
       return baseQueryBuilder
         .leftJoinAndSelect(`${alias}.${authorAlias}`, authorAlias)
+        .leftJoinAndSelect(
+          (qb) =>
+            qb
+              .subQuery()
+              .select('postComment')
+              .from(PostComment, 'postComment')
+              .where('postComment.post_id = post.id')
+              .orderBy('postComment.created_at', 'DESC')
+              .limit(5),
+          commentAlias,
+        )
         .select(full_select_fields);
     }
 

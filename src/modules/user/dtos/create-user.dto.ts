@@ -6,6 +6,7 @@ import {
   stringSchema,
   emailStringSchema,
   optionalDateStringSchema,
+  optionalUrlStringSchema,
   optionalPhoneNumberStringSchema,
 } from 'src/shared/schemas.shared';
 
@@ -15,6 +16,7 @@ export const createUserSchema = z.object({
   password: stringSchema,
   phone_number: optionalPhoneNumberStringSchema,
   date_of_birth: optionalDateStringSchema,
+  user_photo_url: optionalUrlStringSchema,
 });
 
 export type CreateUserPayload = z.infer<typeof createUserSchema>;
@@ -23,7 +25,11 @@ export class CreateUserDTO extends createZodDto(createUserSchema) {
   @ApiProperty({ type: String, description: 'User name' })
   user_name: string;
 
-  @ApiProperty({ type: String, description: 'User email', example: 'test@gmail.com' })
+  @ApiProperty({
+    type: String,
+    description: 'User email',
+    example: 'test@gmail.com',
+  })
   user_email: string;
 
   @ApiPropertyOptional({ type: String, description: 'Optional password' })
@@ -31,6 +37,12 @@ export class CreateUserDTO extends createZodDto(createUserSchema) {
 
   @ApiPropertyOptional({ type: String, example: '(11) 11111-1111' })
   phone_number?: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    example: 'https://photos.com/photo.png',
+  })
+  user_photo_url?: string;
 
   @ApiProperty({ type: String, example: '2003-12-09' })
   date_of_birth: string;

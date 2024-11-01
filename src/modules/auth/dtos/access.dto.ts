@@ -23,6 +23,9 @@ export class UserDTO implements DeepPartial<User> {
 
   @ApiProperty()
   date_of_birth: NullableValue<string>;
+
+  @ApiProperty()
+  user_photo_url: NullableValue<string>;
 }
 
 export class AccessDTO {

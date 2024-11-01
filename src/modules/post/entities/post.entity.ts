@@ -10,6 +10,7 @@ import {
 import { Base } from 'src/lib/database/entities/base.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
+import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
 
 import type { CreatePostPayload } from '../dtos/create-post.dto';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';
@@ -47,6 +48,9 @@ export class Post extends Base {
   @OneToMany(() => PostLike, (postLike) => postLike.post)
   likes: PostLike[];
 
+  @OneToMany(() => PostComment, (postComment) => postComment.post)
+  comments: PostComment[];
+
   static create(payload: CreatePostPayload & { author_id: string }) {
     const item = new Post();
 
@@ -66,6 +70,7 @@ export class Post extends Base {
 
 export const alias = 'post';
 export const authorAlias = 'author';
+export const commentAlias = 'comments';
 
 export type PostSelectKey =
   | `${typeof alias}.${keyof Post}`

@@ -7,6 +7,7 @@ import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-reques
 
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
 import type { CreateUserPayload } from '../dtos/create-user.dto';
+import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
 
 @Entity('users')
 export class User extends Base {
@@ -25,6 +26,9 @@ export class User extends Base {
   @Column('varchar', { nullable: true })
   phone_number: NullableValue<string>;
 
+  @Column('varchar', { nullable: true, unique: true })
+  user_photo_url: NullableValue<string>;
+
   @Column('date', { nullable: true })
   date_of_birth: NullableValue<string>;
 
@@ -33,6 +37,9 @@ export class User extends Base {
 
   @OneToMany(() => PostLike, (post) => post.user)
   liked_posts: PostLike[];
+
+  @OneToMany(() => PostComment, (postC) => postC.commented_by)
+  comments: PostComment[];
 
   private static async handleCreateHashedPassword(
     password: string,
@@ -101,4 +108,5 @@ export const base_fields = [
   'user.user_email',
   'user.phone_number',
   'user.date_of_birth',
+  'user.user_photo_url',
 ] satisfies UserSelectKey[];

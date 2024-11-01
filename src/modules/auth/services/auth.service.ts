@@ -86,6 +86,7 @@ export class AuthService {
         updated_at: user.updated_at,
         phone_number: user.phone_number,
         date_of_birth: user.date_of_birth,
+        user_photo_url: user.user_photo_url,
       },
       access_token,
       refresh_token,

@@ -15,6 +15,7 @@ export function applyQueryFilters<
   queryBuilder: SelectQueryBuilder<Entity>,
   filters: Filters,
   filters_types: FilterType,
+  isFirstConditionAndWhere = false,
 ) {
   if (Object.keys(filters).length === 0) return;
 
@@ -38,7 +39,9 @@ export function applyQueryFilters<
       );
     }
 
-    queryBuilder[index === 0 ? 'where' : 'andWhere'](condition, {
+    queryBuilder[
+      index === 0 && !isFirstConditionAndWhere ? 'where' : 'andWhere'
+    ](condition, {
       [parameterKey]:
         filterType === 'LIKE' && typeof value === 'string'
           ? `%${value}%`
