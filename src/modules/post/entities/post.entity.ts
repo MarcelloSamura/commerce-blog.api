@@ -113,5 +113,5 @@ export const get_post_by_id_comments_select_fields = [
   'comments.parent_id',
   'commented_by.id',
   'commented_by.user_name',
-  'commented_by.user_email',
+  'commented_by.user_photo_url',
 ] satisfies GetPostByIdCommentsSelectFields[];
