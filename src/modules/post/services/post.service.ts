@@ -80,8 +80,8 @@ export class PostService {
     if (!logged_in_user_id) return { items, meta };
 
     return {
-      meta,
       items: await this.addIsLikedByCurrentUserToPost(items, logged_in_user_id),
+      meta,
     };
   }
 
