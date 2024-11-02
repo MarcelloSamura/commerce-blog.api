@@ -10,7 +10,10 @@ import {
 import { Base } from 'src/lib/database/entities/base.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
-import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
+import {
+  commented_by_alias,
+  PostComment,
+} from 'src/modules/post-comment/entities/post-comment.entity';
 
 import type { CreatePostPayload } from '../dtos/create-post.dto';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';
@@ -98,3 +101,17 @@ export const full_select_fields = [
   'author.id',
   'author.user_name',
 ] satisfies PostSelectKey[];
+
+type GetPostByIdCommentsSelectFields =
+  | `${typeof commentAlias}.${keyof PostComment}`
+  | `${typeof commented_by_alias}.${keyof User}`;
+
+export const get_post_by_id_comments_select_fields = [
+  'comments.id',
+  'comments.content',
+  'comments.created_at',
+  'comments.parent_id',
+  'commented_by.id',
+  'commented_by.user_name',
+  'commented_by.user_email',
+] satisfies GetPostByIdCommentsSelectFields[];

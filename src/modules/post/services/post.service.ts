@@ -13,11 +13,8 @@ import {
 } from 'src/utils/apply-query-filters.utils';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
 import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
-import {
-  commented_by_alias,
-  PostComment,
-} from 'src/modules/post-comment/entities/post-comment.entity';
 import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
+import { commented_by_alias } from 'src/modules/post-comment/entities/post-comment.entity';
 
 import {
   Post,
@@ -26,6 +23,7 @@ import {
   full_select_fields,
   base_pagination_fields,
   commentAlias,
+  get_post_by_id_comments_select_fields,
 } from '../entities/post.entity';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';
 import type { CreatePostPayload } from '../dtos/create-post.dto';
@@ -95,15 +93,13 @@ export class PostService {
 
     if (!usePerfomaticSelect) {
       queryBuilder
-        .leftJoinAndSelect(`${alias}.comments`, commentAlias)
+        .leftJoinAndSelect(`${alias}.${commentAlias}`, commentAlias)
+        .leftJoinAndSelect(
+          `${commentAlias}.${commented_by_alias}`,
+          commented_by_alias,
+        )
         .limit(5)
-        .addSelect([
-          `${commentAlias}.id`,
-          `${commentAlias}.content`,
-          `${commentAlias}.created_at`,
-          `${commentAlias}.parent_id`,
-          `${commentAlias}.commented_by_id`,
-        ]);
+        .addSelect(get_post_by_id_comments_select_fields);
     }
 
     const post = await queryBuilder.getOne();
