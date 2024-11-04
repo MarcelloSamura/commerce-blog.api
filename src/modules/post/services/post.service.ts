@@ -166,10 +166,19 @@ export class PostService {
     });
   }
 
-  async updatePost(id: string, payload: UpdatePostPayload, author_id: string) {
-    const postToUpdate = await this.getPostById(id, true);
+  private async getPostAndCheckPermission(
+    id: string,
+    author_id: string,
+  ): Promise<Post> {
+    const post = await this.getPostById(id, true);
 
-    this.checkPermission(postToUpdate, author_id);
+    this.checkPermission(post, author_id);
+
+    return post;
+  }
+
+  async updatePost(id: string, payload: UpdatePostPayload, author_id: string) {
+    const postToUpdate = await this.getPostAndCheckPermission(id, author_id);
 
     const updatedPost = Post.update(payload);
 
@@ -177,9 +186,7 @@ export class PostService {
   }
 
   async deletePost(id: string, author_id: string) {
-    const postToDelete = await this.getPostById(id, true);
-
-    this.checkPermission(postToDelete, author_id);
+    const postToDelete = await this.getPostAndCheckPermission(id, author_id);
 
     return this.postRepository.remove(postToDelete);
   }
