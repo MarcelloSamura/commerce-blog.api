@@ -8,7 +8,7 @@ import {
   optionalStringSchema,
 } from '../../../shared/schemas.shared';
 
-import { createNullableTransform } from 'src/utils/create-nullable-transform.util';
+import { createNullableTransform } from '../../../utils/create-nullable-transform.util';
 
 import { postContentMaxLength } from '../entities/post.entity';
 

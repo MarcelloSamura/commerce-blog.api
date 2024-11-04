@@ -3,7 +3,7 @@ import { createZodDto } from 'nestjs-zod';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { stringSchema } from '../../../shared/schemas.shared';
-import { createNullableTransform } from 'src/utils/create-nullable-transform.util';
+import { createNullableTransform } from '../../../utils/create-nullable-transform.util';
 
 import { postCommentContentMaxLength } from '../entities/post-comment.entity';
 
