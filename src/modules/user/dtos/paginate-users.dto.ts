@@ -5,8 +5,8 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   optionalEmailStringSchema,
   optionalStringSchemaToLowerCase,
-} from 'src/shared/schemas.shared';
-import { createPaginationSchema } from 'src/utils/create-pagination-schema.utils';
+} from '../../../shared/schemas.shared';
+import { createPaginationSchema } from '../../../utils/create-pagination-schema.utils';
 
 export const paginateUsersSchema = createPaginationSchema({
   user_name: optionalStringSchemaToLowerCase,

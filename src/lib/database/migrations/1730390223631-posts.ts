@@ -6,7 +6,7 @@ import {
   TableIndex,
 } from 'typeorm';
 
-import { postContentMaxLength } from 'src/modules/post/entities/post.entity';
+import { postContentMaxLength } from '../../../modules/post/entities/post.entity';
 
 import { baseColumns } from '../entities/base-columns';
 

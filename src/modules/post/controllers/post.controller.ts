@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { Public } from 'src/shared/decorators/auth.decorator';
-import { UuidParam } from 'src/shared/decorators/uuid-param.decorator';
-import { ApiPaginationQuery } from 'src/shared/decorators/api-pagination-query.decorator';
-import { LoggedInUserIdDecorator } from 'src/shared/decorators/logged-in-user-id.decorator';
+import { Public } from '../../../shared/decorators/auth.decorator';
+import { UuidParam } from '../../../shared/decorators/uuid-param.decorator';
+import { ApiPaginationQuery } from '../../../shared/decorators/api-pagination-query.decorator';
+import { LoggedInUserIdDecorator } from '../../../shared/decorators/logged-in-user-id.decorator';
 
 import { PostService } from '../services/post.service';
 import { CreatePostDTO } from '../dtos/create-post.dto';

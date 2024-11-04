@@ -8,7 +8,7 @@ import {
   optionalDateStringSchema,
   optionalUrlStringSchema,
   optionalPhoneNumberStringSchema,
-} from 'src/shared/schemas.shared';
+} from '../../../shared/schemas.shared';
 
 export const createUserSchema = z.object({
   user_name: stringSchema,

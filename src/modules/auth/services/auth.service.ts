@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { validatePassword } from 'src/utils/password.utils';
-import { User } from 'src/modules/user/entities/user.entity';
-import { UserService } from 'src/modules/user/services/user.service';
-import { accessTokenConfig, refreshJwtConfig } from 'src/config/jwt.config';
-import type { CreateUserPayload } from 'src/modules/user/dtos/create-user.dto';
-import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
+import { validatePassword } from '../../../utils/password.utils';
+import { User } from '../../user/entities/user.entity';
+import { UserService } from '../../user/services/user.service';
+import { accessTokenConfig, refreshJwtConfig } from '../../../config/jwt.config';
+import type { CreateUserPayload } from '../../user/dtos/create-user.dto';
+import { BadRequestError } from '../../../lib/http-exceptions/errors/types/bad-request-error';
 
 import type { AccessDTO } from '../dtos/access.dto';
 import type { LoginPayload } from '../dtos/login.dto';

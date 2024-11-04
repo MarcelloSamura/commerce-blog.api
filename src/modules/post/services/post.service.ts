@@ -10,11 +10,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   applyQueryFilters,
   applyOrderByFilters,
-} from 'src/utils/apply-query-filters.utils';
-import { PaginationService } from 'src/lib/pagination/pagination.service';
-import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
-import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
-import { commented_by_alias } from 'src/modules/post-comment/entities/post-comment.entity';
+} from '../../../utils/apply-query-filters.utils';
+import { PaginationService } from '../../../lib/pagination/pagination.service';
+import { PostLikeService } from '../../post-like/services/post-like.service';
+import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
+import { commented_by_alias } from '../../post-comment/entities/post-comment.entity';
 
 import {
   Post,

@@ -6,8 +6,8 @@ import {
   uuidSchema,
   optionalUuidSchema,
   optionalStringToIntegerSchema,
-} from 'src/shared/schemas.shared';
-import { createPaginationSchema } from 'src/utils/create-pagination-schema.utils';
+} from '../../../shared/schemas.shared';
+import { createPaginationSchema } from '../../../utils/create-pagination-schema.utils';
 
 export const paginatePostCommentsSchema = createPaginationSchema({
   post_id: uuidSchema,

@@ -3,7 +3,7 @@ import { type ZodRawShape, z } from 'zod';
 import {
   optionalSortSchema,
   optionalPaginationParamSchema,
-} from 'src/shared/schemas.shared';
+} from '../shared/schemas.shared';
 
 const pageSchema = optionalPaginationParamSchema.default(1);
 const limitSchema = optionalPaginationParamSchema.default(10);

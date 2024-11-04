@@ -5,9 +5,9 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
   applyQueryFilters,
   applyOrderByFilters,
-} from 'src/utils/apply-query-filters.utils';
-import { PaginationService } from 'src/lib/pagination/pagination.service';
-import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
+} from '../../../utils/apply-query-filters.utils';
+import { PaginationService } from '../../../lib/pagination/pagination.service';
+import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
 
 import type { CreateUserPayload } from '../dtos/create-user.dto';
 import type { UpdateUserPayload } from '../dtos/update-user.dto';

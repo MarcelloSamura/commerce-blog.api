@@ -6,7 +6,7 @@ import {
   optionalStringSchema,
   optionalUrlStringSchema,
   optionalStringToIntegerSchema,
-} from 'src/shared/schemas.shared';
+} from '../shared/schemas.shared';
 
 export const envSchema = z.object({
   DATABASE_ROOT_PASSWORD: stringSchema,

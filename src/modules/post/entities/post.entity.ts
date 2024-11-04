@@ -7,13 +7,13 @@ import {
   OneToMany,
 } from 'typeorm';
 
-import { Base } from 'src/lib/database/entities/base.entity';
-import { User } from 'src/modules/user/entities/user.entity';
-import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
+import { User } from '../../user/entities/user.entity';
+import { Base } from '../../../lib/database/entities/base.entity';
+import { PostLike } from '../../post-like/entities/post-like.entity';
 import {
-  commented_by_alias,
   PostComment,
-} from 'src/modules/post-comment/entities/post-comment.entity';
+  commented_by_alias,
+} from '../../post-comment/entities/post-comment.entity';
 
 import type { CreatePostPayload } from '../dtos/create-post.dto';
 import type { UpdatePostPayload } from '../dtos/update-post.dto';

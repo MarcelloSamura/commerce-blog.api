@@ -6,7 +6,7 @@ import {
   stringSchema,
   optionalUrlStringSchema,
   optionalStringSchema,
-} from 'src/shared/schemas.shared';
+} from '../../../shared/schemas.shared';
 
 import { createNullableTransform } from 'src/utils/create-nullable-transform.util';
 

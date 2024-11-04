@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { optionalUuidSchema } from 'src/shared/schemas.shared';
-import { createPaginationSchema } from 'src/utils/create-pagination-schema.utils';
+import { optionalUuidSchema } from '../../../shared/schemas.shared';
+import { createPaginationSchema } from '../../../utils/create-pagination-schema.utils';
 
 export const paginatePostLikesSchema = createPaginationSchema({
   post_id: optionalUuidSchema,

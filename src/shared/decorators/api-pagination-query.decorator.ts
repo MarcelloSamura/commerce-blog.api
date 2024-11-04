@@ -1,6 +1,6 @@
 import { ApiQuery, type ApiQueryOptions } from '@nestjs/swagger';
 
-import { IS_DEV_ENV } from 'src/config/env.config';
+import { IS_DEV_ENV } from '../../config/env.config';
 
 export type Params = ApiQueryOptions[];
 

@@ -1,13 +1,13 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
-import { Base } from 'src/lib/database/entities/base.entity';
-import { Post } from 'src/modules/post/entities/post.entity';
-import { PostLike } from 'src/modules/post-like/entities/post-like.entity';
-import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
+import { Post } from '../../post/entities/post.entity';
+import { Base } from '../../../lib/database/entities/base.entity';
+import { PostLike } from '../../post-like/entities/post-like.entity';
+import { PostComment } from '../../post-comment/entities/post-comment.entity';
+import { BadRequestError } from '../../../lib/http-exceptions/errors/types/bad-request-error';
 
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
 import type { CreateUserPayload } from '../dtos/create-user.dto';
-import { PostComment } from 'src/modules/post-comment/entities/post-comment.entity';
 
 @Entity('users')
 export class User extends Base {

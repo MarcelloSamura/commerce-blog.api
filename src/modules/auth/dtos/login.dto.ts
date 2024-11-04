@@ -2,7 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-import { emailStringSchema, stringSchema } from 'src/shared/schemas.shared';
+import {
+  emailStringSchema,
+  stringSchema,
+} from '../../../shared/schemas.shared';
 
 export const loginSchema = z.object({
   user_email: emailStringSchema,

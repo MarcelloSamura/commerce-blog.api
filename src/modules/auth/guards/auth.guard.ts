@@ -8,10 +8,10 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
-import { LogService } from 'src/lib/log/log.service';
-import { accessTokenConfig } from 'src/config/jwt.config';
-import { IS_PUBLIC_KEY } from 'src/shared/decorators/auth.decorator';
-import { DECODED_TOKEN_KEY } from 'src/shared/decorators/decoded-token.decorator';
+import { LogService } from '../../../lib/log/log.service';
+import { accessTokenConfig } from '../../../config/jwt.config';
+import { IS_PUBLIC_KEY } from '../../../shared/decorators/auth.decorator';
+import { DECODED_TOKEN_KEY } from '../../../shared/decorators/decoded-token.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

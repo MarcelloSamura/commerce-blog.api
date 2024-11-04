@@ -1,11 +1,8 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 
-import { Base } from 'src/lib/database/entities/base.entity';
-import { User } from 'src/modules/user/entities/user.entity';
-import {
-  Post,
-  alias as postAlias,
-} from 'src/modules/post/entities/post.entity';
+import { User } from '../../user/entities/user.entity';
+import { Base } from '../../../lib/database/entities/base.entity';
+import { Post, alias as postAlias } from '../../post/entities/post.entity';
 
 import type { CreateLike } from '../dtos/create-like.dto';
 

@@ -2,7 +2,7 @@ import { DataSource, type DataSourceOptions } from 'typeorm';
 import type { SeederOptions } from 'typeorm-extension';
 import * as path from 'path';
 
-import { ENV_VARIABLES } from 'src/config/env.config';
+import { ENV_VARIABLES } from '../../config/env.config';
 
 import { MainSeeder } from './seeds/main.seed';
 

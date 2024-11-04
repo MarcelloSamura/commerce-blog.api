@@ -5,7 +5,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   optionalStringSchema,
   optionalEmailStringSchema,
-} from 'src/shared/schemas.shared';
+} from '../../../shared/schemas.shared';
 
 export const updateUserSchema = z.object({
   user_name: optionalStringSchema,

@@ -6,7 +6,7 @@ import {
   uuidSchema,
   stringSchema,
   optionalUuidSchema,
-} from 'src/shared/schemas.shared';
+} from '../../../shared/schemas.shared';
 
 import { postCommentContentMaxLength } from '../entities/post-comment.entity';
 

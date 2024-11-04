@@ -5,7 +5,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   stringSchema,
   optionalUrlStringSchema,
-} from 'src/shared/schemas.shared';
+} from '../../../shared/schemas.shared';
 
 import { postContentMaxLength } from '../entities/post.entity';
 

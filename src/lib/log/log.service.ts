@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { IS_DEV_ENV } from 'src/config/env.config';
+import { IS_DEV_ENV } from '../../config/env.config';
 
 @Injectable()
 export class LogService {
