@@ -84,7 +84,6 @@ export const base_select_fields = [
   'post-comment.content',
   'post-comment.created_at',
   'post-comment.updated_at',
-  'post-comment.post_id',
   'post-comment.parent_id',
   'commented_by.id',
   'commented_by.user_photo_url',
@@ -100,6 +99,7 @@ export const base_pagination_fields_with_post = [
   'post.id',
   'post.comments_count',
   'post-comment.commented_by_id',
+  'post-comment.created_at',
 ] satisfies PostCommentSelectKeyWithPost[];
 
 export { postAlias };

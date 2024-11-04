@@ -97,13 +97,10 @@ export class PostService {
 
     if (!usePerfomaticSelect) {
       queryBuilder
-        .leftJoinAndSelect(`${alias}.${commentAlias}`, commentAlias)
-        .leftJoinAndSelect(
-          `${commentAlias}.${commented_by_alias}`,
-          commented_by_alias,
-        )
-        .limit(5)
-        .addSelect(get_post_by_id_comments_select_fields);
+        .leftJoin(`${alias}.${commentAlias}`, commentAlias)
+        .leftJoin(`${commentAlias}.${commented_by_alias}`, commented_by_alias)
+        .addSelect(get_post_by_id_comments_select_fields)
+        .limit(5);
     }
 
     const [post, like] = await Promise.all([

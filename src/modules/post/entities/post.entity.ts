@@ -100,6 +100,7 @@ export const full_select_fields = [
   'post.content',
   'author.id',
   'author.user_name',
+  'author.user_photo_url',
 ] satisfies PostSelectKey[];
 
 type GetPostByIdCommentsSelectFields =
@@ -110,6 +111,7 @@ export const get_post_by_id_comments_select_fields = [
   'comments.id',
   'comments.content',
   'comments.created_at',
+  'comments.updated_at',
   'comments.parent_id',
   'commented_by.id',
   'commented_by.user_name',

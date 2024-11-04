@@ -2,13 +2,18 @@ import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { optionalUuidSchema, uuidSchema } from 'src/shared/schemas.shared';
+import {
+  uuidSchema,
+  optionalUuidSchema,
+  optionalStringToIntegerSchema,
+} from 'src/shared/schemas.shared';
 import { createPaginationSchema } from 'src/utils/create-pagination-schema.utils';
 
 export const paginatePostCommentsSchema = createPaginationSchema({
   post_id: uuidSchema,
   parent_id: optionalUuidSchema,
   commented_by_id: optionalUuidSchema,
+  skip: optionalStringToIntegerSchema,
 });
 
 export type PaginatePostCommentsPayload = z.infer<
@@ -26,4 +31,7 @@ export class PaginatePostCommentsDTO extends createZodDto(
 
   @ApiPropertyOptional()
   commented_by_id?: string;
+
+  @ApiPropertyOptional({ type: Number, example: '5' })
+  skip?: number;
 }

@@ -10,14 +10,14 @@ import {
 } from '@nestjs/common';
 
 import { Public } from 'src/shared/decorators/auth.decorator';
+import { UuidParam } from 'src/shared/decorators/uuid-param.decorator';
 import { ApiPaginationQuery } from 'src/shared/decorators/api-pagination-query.decorator';
+import { LoggedInUserIdDecorator } from 'src/shared/decorators/logged-in-user-id.decorator';
 
 import { PostCommentService } from '../services/post-comment.service';
-import { PaginatePostCommentsDTO } from '../dtos/paginate-post-comments.dto';
-import { UuidParam } from 'src/shared/decorators/uuid-param.decorator';
 import { CreatePostCommentDTO } from '../dtos/create-post-comment.dto';
-import { LoggedInUserIdDecorator } from 'src/shared/decorators/logged-in-user-id.decorator';
 import { UpdatePostCommentDTO } from '../dtos/update-post-comment.dto';
+import { PaginatePostCommentsDTO } from '../dtos/paginate-post-comments.dto';
 
 @ApiTags('post-comment')
 @Controller('post-comment')

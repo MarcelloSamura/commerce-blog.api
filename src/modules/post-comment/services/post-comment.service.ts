@@ -21,11 +21,11 @@ import {
   commented_by_alias,
   base_select_fields,
   postAlias,
+  base_pagination_fields_with_post,
 } from '../entities/post-comment.entity';
+import type { UpdatePostCommentPayload } from '../dtos/update-post-comment.dto';
 import type { CreatePostCommentPayload } from '../dtos/create-post-comment.dto';
 import type { PaginatePostCommentsPayload } from '../dtos/paginate-post-comments.dto';
-import { UpdatePostCommentPayload } from '../dtos/update-post-comment.dto';
-import { base_select_fields_with_join } from 'src/modules/post-like/entities/post-like.entity';
 
 @Injectable()
 export class PostCommentService {
@@ -48,7 +48,7 @@ export class PostCommentService {
     return this.postCommentRepository
       .createQueryBuilder(alias)
       .leftJoinAndSelect(`${alias}.${postAlias}`, postAlias)
-      .select(base_select_fields_with_join);
+      .select(base_pagination_fields_with_post);
   }
 
   private checkPermission(postComment: PostComment, logged_in_user_id: string) {
@@ -81,6 +81,7 @@ export class PostCommentService {
     page,
     sort,
     commented_by_id,
+    skip,
     ...rest
   }: PaginatePostCommentsPayload) {
     const queryBuilder = this.createPostCommentQueryBuilder();
@@ -92,12 +93,14 @@ export class PostCommentService {
     applyQueryFilters(
       commented_by_alias,
       queryBuilder,
-      { commented_by_id },
-      { commented_by_id: '=' },
+      { id: commented_by_id },
+      { id: '=' },
       true,
     );
 
     applyOrderByFilters(alias, queryBuilder, sort);
+
+    if (skip) queryBuilder.skip(skip);
 
     return this.paginationService.paginateWithQueryBuilder(queryBuilder, {
       page,

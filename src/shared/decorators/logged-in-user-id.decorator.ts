@@ -11,6 +11,8 @@ export const LoggedInUserIdDecorator = createParamDecorator(
       DECODED_TOKEN_KEY
     ] as DecodedTokenType;
 
+    if (!decoded_token) return undefined;
+
     return decoded_token.id;
   },
 );

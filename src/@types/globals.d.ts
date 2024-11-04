@@ -37,12 +37,12 @@ declare global {
     id: string;
   }
 
-  export type DecodedTokenType = IJwtPayload & {
+  export interface DecodedTokenType extends IJwtPayload {
     iat: number;
     exp: number;
     aud: string;
     iss: string;
-  };
+  }
 
   export type PaginationArgs<T extends Record<string, any> = object> = T &
     Omit<IPaginationOptions, 'limit' | 'page'> & {
