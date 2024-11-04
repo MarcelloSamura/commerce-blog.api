@@ -1,11 +1,11 @@
 import { del } from '@vercel/blob';
-import { Repository } from 'typeorm';
 import {
   ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
 } from '@nestjs/common';
+import { IsNull, Repository, Not } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import {
@@ -91,11 +91,11 @@ export class PostService {
     author_id: string,
   ): Promise<NonNullableObject<Pick<Post, 'banner_url'>>[]> {
     const result = await this.postRepository.find({
-      where: { author_id },
+      where: { author_id, banner_url: Not(IsNull()) },
       select: ['banner_url'],
     });
 
-    return result.filter((post) => !isNullableValue(post.banner_url)) as any;
+    return result as NonNullableObject<Pick<Post, 'banner_url'>>[];
   }
 
   async getPostById(
