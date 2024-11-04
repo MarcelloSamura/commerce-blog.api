@@ -18,7 +18,7 @@ async function bootstrap() {
       origin: corsConfig.allowedDomains,
     });
     app.enableShutdownHooks();
-    app.setGlobalPrefix('server');
+    app.setGlobalPrefix(ENV_VARIABLES.APP_PREFIX);
 
     /**
      * -----------------------------------------------------------------------------
@@ -45,7 +45,7 @@ async function bootstrap() {
 
       writeFileSync('swagger-document.json', JSON.stringify(document, null, 2));
 
-      SwaggerModule.setup('server', app, document);
+      SwaggerModule.setup(ENV_VARIABLES.APP_PREFIX, app, document);
     }
 
     await app.listen(ENV_VARIABLES.PORT);

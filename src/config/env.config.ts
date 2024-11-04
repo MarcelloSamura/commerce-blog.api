@@ -25,6 +25,7 @@ export const envSchema = z.object({
   JWT_EXPIRES_IN: stringSchema,
   PORT: optionalStringToIntegerSchema.default('5000'),
   ENV: z.enum(['prod', 'dev']).default('dev'),
+  APP_PREFIX: optionalStringSchema.default('server'),
 });
 
 export type EnvType = z.infer<typeof envSchema>;
