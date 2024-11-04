@@ -4,6 +4,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import {
   optionalStringSchema,
+  optionalUrlStringSchema,
   optionalEmailStringSchema,
 } from '../../../shared/schemas.shared';
 
@@ -12,6 +13,7 @@ export const updateUserSchema = z.object({
   user_email: optionalEmailStringSchema,
   new_password: optionalStringSchema,
   previous_password: optionalStringSchema,
+  user_photo_url: optionalUrlStringSchema,
 });
 
 export type UpdateUserPayload = z.infer<typeof updateUserSchema>;

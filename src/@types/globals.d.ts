@@ -49,4 +49,10 @@ declare global {
       limit: number;
       page: number;
     };
+
+  type NonNullableObject<Obj extends object> = {
+    [K in keyof Obj as Obj[K] extends null | undefined
+      ? never
+      : K]: NonNullable<Obj[K]>;
+  };
 }

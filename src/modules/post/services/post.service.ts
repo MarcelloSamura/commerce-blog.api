@@ -1,3 +1,4 @@
+import { del } from '@vercel/blob';
 import { Repository } from 'typeorm';
 import {
   ForbiddenException,
@@ -11,10 +12,11 @@ import {
   applyQueryFilters,
   applyOrderByFilters,
 } from '../../../utils/apply-query-filters.utils';
-import { PaginationService } from '../../../lib/pagination/pagination.service';
+import { isNullableValue } from '../../../utils/is-nullable-value.util';
 import { PostLikeService } from '../../post-like/services/post-like.service';
-import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
+import { PaginationService } from '../../../lib/pagination/pagination.service';
 import { commented_by_alias } from '../../post-comment/entities/post-comment.entity';
+import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
 
 import {
   Post,
@@ -83,6 +85,17 @@ export class PostService {
       items: await this.addIsLikedByCurrentUserToPost(items, logged_in_user_id),
       meta,
     };
+  }
+
+  async getUsersPostsImages(
+    author_id: string,
+  ): Promise<NonNullableObject<Pick<Post, 'banner_url'>>[]> {
+    const result = await this.postRepository.find({
+      where: { author_id },
+      select: ['banner_url'],
+    });
+
+    return result.filter((post) => !isNullableValue(post.banner_url)) as any;
   }
 
   async getPostById(
@@ -177,6 +190,10 @@ export class PostService {
   async updatePost(id: string, payload: UpdatePostPayload, author_id: string) {
     const postToUpdate = await this.getPostAndCheckPermission(id, author_id);
 
+    if (payload.banner_url && postToUpdate.banner_url) {
+      await del(postToUpdate.banner_url);
+    }
+
     const updatedPost = Post.update(payload);
 
     return this.postRepository.update(postToUpdate.id, updatedPost);
@@ -184,6 +201,8 @@ export class PostService {
 
   async deletePost(id: string, author_id: string) {
     const postToDelete = await this.getPostAndCheckPermission(id, author_id);
+
+    if (postToDelete.banner_url) await del(postToDelete.banner_url);
 
     return this.postRepository.remove(postToDelete);
   }
