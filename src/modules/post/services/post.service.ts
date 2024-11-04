@@ -85,7 +85,11 @@ export class PostService {
     };
   }
 
-  async getPostById(id: string, usePerfomaticSelect = false): Promise<Post> {
+  async getPostById(
+    id: string,
+    usePerfomaticSelect = false,
+    logged_in_user_id?: string,
+  ): Promise<Post & { is_liked_by_current_user?: boolean }> {
     const queryBuilder = this.createPostQueryBuilder(usePerfomaticSelect).where(
       `${alias}.id = :id`,
       { id },
@@ -102,11 +106,19 @@ export class PostService {
         .addSelect(get_post_by_id_comments_select_fields);
     }
 
-    const post = await queryBuilder.getOne();
+    const [post, like] = await Promise.all([
+      queryBuilder.getOne(),
+      logged_in_user_id
+        ? this.postLikeService.getPostLikeByPostIdAndUserId(
+            id,
+            logged_in_user_id,
+          )
+        : undefined,
+    ]);
 
     if (!post) throw new NotFoundError('Post não encotrado');
 
-    return post;
+    return like ? { ...post, is_liked_by_current_user: true } : post;
   }
 
   private async addIsLikedByCurrentUserToPost(

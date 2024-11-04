@@ -36,8 +36,11 @@ export class PostController {
 
   @Public()
   @Get(':id')
-  getOne(@UuidParam('id') id: string) {
-    return this.postService.getPostById(id);
+  getOne(
+    @UuidParam('id') id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id?: string,
+  ) {
+    return this.postService.getPostById(id, false, logged_in_user_id);
   }
 
   @Post()
