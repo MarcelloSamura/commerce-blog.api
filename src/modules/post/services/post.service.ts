@@ -176,6 +176,16 @@ export class PostService {
     });
   }
 
+  async handleDeleteUserLikes(user_id: string) {
+    const likes = await this.postLikeService.getUsersPostLikes(user_id);
+
+    await Promise.all(
+      likes.map((like) =>
+        this.updateCounts(like.post as Post, 'likes_count', 'decrement'),
+      ),
+    );
+  }
+
   private async getPostAndCheckPermission(
     id: string,
     author_id: string,

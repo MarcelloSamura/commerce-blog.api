@@ -128,7 +128,12 @@ export class UserService {
         );
       }
 
-      return this.userRepository.delete(userToDelete.id);
+      const [deleteResult] = await Promise.all([
+        this.userRepository.delete(userToDelete.id),
+        this.postService.handleDeleteUserLikes(userToDelete.id),
+      ]);
+
+      return deleteResult;
     } catch {
       if (abortSignal.aborted) {
         throw new InternalServerErrorException(

@@ -11,6 +11,7 @@ import {
   applyQueryFilters,
   applyOrderByFilters,
 } from '../../../utils/apply-query-filters.utils';
+import type { Post } from '../../post/entities/post.entity';
 import { PostService } from '../../post/services/post.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
 import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
@@ -98,6 +99,16 @@ export class PostLikeService {
     );
 
     return queryBuilder.getOne();
+  }
+
+  async getUsersPostLikes(user_id: string) {
+    const result = await this.postLikeRepository.find({
+      where: { user_id },
+      select: { post: { likes_count: true, id: true } },
+      relations: ['post'],
+    });
+
+    return result as { post: { likes_count: number; id: string } }[];
   }
 
   async getPostLikeById(id: string): Promise<PostLike> {
