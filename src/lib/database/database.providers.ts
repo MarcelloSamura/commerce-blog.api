@@ -1,4 +1,5 @@
 import { DataSource, type DataSourceOptions } from 'typeorm';
+import type { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import type { SeederOptions } from 'typeorm-extension';
 import * as path from 'path';
 
@@ -18,7 +19,9 @@ export const migrationsPath = path.resolve(
 
 const isLocal = ENV_VARIABLES.DATABASE_HOST === 'localhost';
 
-export const options: DataSourceOptions & SeederOptions = {
+export type Options = DataSourceOptions & SeederOptions & TypeOrmModuleOptions;
+
+export const options: Options = {
   type: 'postgres',
   port: ENV_VARIABLES.DB_PORT,
   username: ENV_VARIABLES.DB_USER,
