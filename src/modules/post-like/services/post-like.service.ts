@@ -102,11 +102,12 @@ export class PostLikeService {
   }
 
   async getUsersPostLikes(user_id: string) {
-    const result = await this.postLikeRepository.find({
-      where: { user_id },
-      select: { post: { likes_count: true, id: true } },
-      relations: ['post'],
-    });
+    const result = await this.postLikeRepository
+      .createQueryBuilder(alias)
+      .leftJoinAndSelect(`${alias}.${postAlias}`, `${postAlias}`)
+      .where(`${alias}.user_id = :user_id`, { user_id })
+      .select([`${postAlias}.id`, `${postAlias}.likes_count`])
+      .getMany();
 
     return result as { post: { likes_count: number; id: string } }[];
   }
