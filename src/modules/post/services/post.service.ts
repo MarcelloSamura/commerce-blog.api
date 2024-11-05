@@ -12,7 +12,6 @@ import {
   applyQueryFilters,
   applyOrderByFilters,
 } from '../../../utils/apply-query-filters.utils';
-import { isNullableValue } from '../../../utils/is-nullable-value.util';
 import { PostLikeService } from '../../post-like/services/post-like.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
 import { commented_by_alias } from '../../post-comment/entities/post-comment.entity';
