@@ -44,7 +44,7 @@ export const base_select_fields = [
   'post-like.created_at',
 ] satisfies PostLikeSelectKey[];
 
-type PostLikeSelectKeyWithJoin =
+export type PostLikeSelectKeyWithJoin =
   | PostLikeSelectKey
   | `${typeof postAlias}.${keyof Post}`;
 

@@ -11,7 +11,6 @@ import {
   applyQueryFilters,
   applyOrderByFilters,
 } from '../../../utils/apply-query-filters.utils';
-import type { Post } from '../../post/entities/post.entity';
 import { PostService } from '../../post/services/post.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
 import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
@@ -22,6 +21,7 @@ import {
   postAlias,
   base_select_fields,
   base_select_fields_with_join,
+  type PostLikeSelectKeyWithJoin,
 } from '../entities/post-like.entity';
 import type { PaginatePostLikesPayload } from '../dtos/paginate-post-likes.dto';
 
@@ -106,7 +106,10 @@ export class PostLikeService {
       .createQueryBuilder(alias)
       .leftJoinAndSelect(`${alias}.${postAlias}`, `${postAlias}`)
       .where(`${alias}.user_id = :user_id`, { user_id })
-      .select([`${postAlias}.id`, `${postAlias}.likes_count`])
+      .select([
+        `${postAlias}.id`,
+        `${postAlias}.likes_count`,
+      ] as PostLikeSelectKeyWithJoin[])
       .getMany();
 
     return result as { post: { likes_count: number; id: string } }[];
