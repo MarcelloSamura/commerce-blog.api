@@ -85,6 +85,7 @@ export const base_select_fields = [
   'post-comment.created_at',
   'post-comment.updated_at',
   'post-comment.parent_id',
+  'post-comment.post_id',
   'commented_by.id',
   'commented_by.user_photo_url',
   'commented_by.user_name',

@@ -142,13 +142,13 @@ export class PostService {
       logged_in_user_id,
     );
 
-    const postLikesIdsSet = new Set(
+    const likedPostsIdsSet = new Set(
       postLikes.map((postLike) => postLike.post_id),
     );
 
     return posts.map((post) => ({
       ...post,
-      is_liked_by_current_user: postLikesIdsSet.has(post.id),
+      is_liked_by_current_user: likedPostsIdsSet.has(post.id),
     }));
   }
 

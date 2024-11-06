@@ -15,9 +15,14 @@ import { PostService } from '../../post/services/post.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
 import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
 
+import {
+  User,
+  alias,
+  base_fields,
+  type UserSelectKey,
+} from '../entities/user.entity';
 import type { CreateUserPayload } from '../dtos/create-user.dto';
 import type { UpdateUserPayload } from '../dtos/update-user.dto';
-import { User, alias, base_fields } from '../entities/user.entity';
 import type { PaginateUsersPayload } from '../dtos/paginate-users.dto';
 
 @Injectable()
@@ -32,7 +37,10 @@ export class UserService {
     const baseQueryBuilder = this.userRepository.createQueryBuilder(alias);
 
     if (selectPassword) {
-      baseQueryBuilder.select([...base_fields, `${alias}.hashed_password`]);
+      baseQueryBuilder.select([
+        ...base_fields,
+        `${alias}.hashed_password`,
+      ] as UserSelectKey[]);
     } else {
       baseQueryBuilder.select(base_fields);
     }
