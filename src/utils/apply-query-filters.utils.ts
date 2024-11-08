@@ -3,12 +3,15 @@ import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 import { isNullableValue } from './is-nullable-value.util';
 
 export type FilterTypes = 'LIKE' | '=' | '<' | '>' | '<=' | '>=';
-export type Filter = Record<string, Maybe<string | number | Date | boolean>>;
+export type Filter<E extends ObjectLiteral> = Record<
+  keyof E,
+  Maybe<string | number | Date | boolean>
+>;
 
 export function applyQueryFilters<
   Alias extends string,
   Entity extends ObjectLiteral,
-  Filters extends Filter,
+  Filters extends Partial<Filter<Entity>>,
   FilterType extends Record<keyof Filters, FilterTypes>,
 >(
   alias: Alias,
@@ -17,7 +20,7 @@ export function applyQueryFilters<
   filters_types: FilterType,
   isFirstConditionAndWhere = false,
 ) {
-  if (Object.keys(filters).length === 0) return;
+  if (Object.values(filters).every((value) => isNullableValue(value))) return;
 
   let index: number = 0;
 
@@ -84,4 +87,49 @@ export function applyOrderByFilters<T extends string, E extends ObjectLiteral>(
     `${alias}.${column}`,
     order.toUpperCase() as 'ASC' | 'DESC',
   );
+}
+
+export interface BetweenFilters<DateVal = Maybe<string | Date>> {
+  start: DateVal;
+  end: DateVal;
+  isAndWhere?: boolean;
+}
+
+export function applyBetweenFilters<
+  Alias extends string,
+  E extends ObjectLiteral,
+>(
+  alias: Alias,
+  queryBuilder: SelectQueryBuilder<E>,
+  field: keyof E,
+  { end, start, isAndWhere = true }: BetweenFilters,
+) {
+  if (end && start) {
+    const datefyedEnd = new Date(end);
+    const datefyedStart = new Date(start);
+
+    queryBuilder[isAndWhere ? 'andWhere' : 'where'](
+      `${alias}.${String(field)} BETWEEN :start AND :end`,
+      {
+        start: datefyedStart,
+        end: datefyedEnd,
+      },
+    );
+  } else if (start) {
+    applyQueryFilters(
+      alias,
+      queryBuilder,
+      { [field]: start } as Partial<Filter<E>>,
+      { [field]: '>=' as FilterTypes } as Record<keyof E, FilterTypes>,
+    );
+  } else if (end) {
+    applyQueryFilters(
+      alias,
+      queryBuilder,
+      { [field]: end } as Partial<Filter<E>>,
+      { [field]: '<=' as FilterTypes } as Record<keyof E, FilterTypes>,
+    );
+  }
+
+  return queryBuilder;
 }
