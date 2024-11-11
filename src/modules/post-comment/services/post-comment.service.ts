@@ -132,12 +132,12 @@ export class PostCommentService {
     { post_id, parent_id, content }: CreatePostCommentPayload,
     logged_in_user_id: string,
   ) {
-    const [post, postComment] = await Promise.all([
+    const [post, parentComment] = await Promise.all([
       this.postService.getPostById(post_id),
       parent_id ? this.getPostCommentById(parent_id) : undefined,
     ]);
 
-    if (postComment && postComment.post_id !== post.id) {
+    if (parentComment && parentComment.post_id !== post.id) {
       throw new ForbiddenException('Id do post é inválido');
     }
 
@@ -146,7 +146,7 @@ export class PostCommentService {
         PostComment.create({
           content,
           post_id: post.id,
-          parent_id: postComment?.id,
+          parent_id: parentComment?.id,
           commented_by_id: logged_in_user_id,
         }),
       ),
