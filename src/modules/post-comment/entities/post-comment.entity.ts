@@ -95,7 +95,7 @@ type PostCommentSelectKeyWithPost =
   | PostCommentSelectKey
   | `${typeof postAlias}.${keyof Post}`;
 
-export const base_pagination_fields_with_post = [
+export const base_select_fields_with_post = [
   'post-comment.id',
   'post.id',
   'post.comments_count',

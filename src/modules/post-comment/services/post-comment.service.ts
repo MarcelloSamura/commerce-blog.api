@@ -21,7 +21,7 @@ import {
   commented_by_alias,
   base_select_fields,
   postAlias,
-  base_pagination_fields_with_post,
+  base_select_fields_with_post,
 } from '../entities/post-comment.entity';
 import type { UpdatePostCommentPayload } from '../dtos/update-post-comment.dto';
 import type { CreatePostCommentPayload } from '../dtos/create-post-comment.dto';
@@ -48,7 +48,7 @@ export class PostCommentService {
     return this.postCommentRepository
       .createQueryBuilder(alias)
       .leftJoinAndSelect(`${alias}.${postAlias}`, postAlias)
-      .select(base_pagination_fields_with_post);
+      .select(base_select_fields_with_post);
   }
 
   private checkPermission(postComment: PostComment, logged_in_user_id: string) {
