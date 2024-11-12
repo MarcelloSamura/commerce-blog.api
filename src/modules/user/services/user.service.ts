@@ -89,6 +89,25 @@ export class UserService {
     return user;
   }
 
+  private checkUserPermission(user: User, logged_in_user_id: string) {
+    if (user.id !== logged_in_user_id) {
+      throw new ForbiddenException(
+        'Não é permitido alterar ou deletar um usuario que não é seu',
+      );
+    }
+  }
+
+  private async getUserAndCheckPermission(
+    id: string,
+    logged_in_user_id: string,
+  ) {
+    const user = await this.getUserById(id);
+
+    this.checkUserPermission(user, logged_in_user_id);
+
+    return user;
+  }
+
   async createUser(payload: CreateUserPayload) {
     const userToCreate = await User.create(payload);
 
@@ -100,9 +119,10 @@ export class UserService {
     payload: UpdateUserPayload,
     logged_in_user_id: string,
   ) {
-    const userToUpdate = await this.getUserById(id, true);
-
-    this.checkUserPermission(userToUpdate.id, logged_in_user_id);
+    const userToUpdate = await this.getUserAndCheckPermission(
+      id,
+      logged_in_user_id,
+    );
 
     if (payload.user_photo_url && userToUpdate.user_photo_url) {
       await del(userToUpdate.user_photo_url);
@@ -114,16 +134,15 @@ export class UserService {
   }
 
   async deleteUser(id: string, logged_in_user_id: string) {
-    const userToDelete = await this.getUserById(id);
-
-    this.checkUserPermission(userToDelete.id, logged_in_user_id);
+    const userToDelete = await this.getUserAndCheckPermission(
+      id,
+      logged_in_user_id,
+    );
 
     const abortController = new AbortController();
     const abortSignal = abortController.signal;
 
     try {
-      if (userToDelete.user_photo_url) await del(userToDelete.user_photo_url);
-
       const userPostsImages = await this.postService.getUsersPostsImages(
         userToDelete.id,
       );
@@ -136,7 +155,10 @@ export class UserService {
         );
       }
 
-      const [deleteResult] = await Promise.all([
+      const [_, deleteResult] = await Promise.all([
+        userToDelete.user_photo_url
+          ? del(userToDelete.user_photo_url)
+          : undefined,
         this.userRepository.delete(userToDelete.id),
         this.postService.handleDeleteUserLikes(userToDelete.id),
       ]);
@@ -150,14 +172,6 @@ export class UserService {
       }
     } finally {
       abortController.abort();
-    }
-  }
-
-  private checkUserPermission(incoming_id: string, logged_in_user_id: string) {
-    if (incoming_id !== logged_in_user_id) {
-      throw new ForbiddenException(
-        'Não é permitido alterar ou deletar um usuario que não é seu',
-      );
     }
   }
 }
