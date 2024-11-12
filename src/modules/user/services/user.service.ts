@@ -39,7 +39,7 @@ export class UserService {
     if (selectPassword) {
       baseQueryBuilder.select([
         ...base_fields,
-        `${alias}.hashed_password`,
+        'user.hashed_password',
       ] as UserSelectKey[]);
     } else {
       baseQueryBuilder.select(base_fields);
