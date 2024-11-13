@@ -190,8 +190,9 @@ export class PostService {
   private async getPostAndCheckPermission(
     id: string,
     author_id: string,
+    usePerfomaticSelect = true,
   ): Promise<Post> {
-    const post = await this.getPostById(id, true);
+    const post = await this.getPostById(id, usePerfomaticSelect);
 
     this.checkPermission(post, author_id);
 
