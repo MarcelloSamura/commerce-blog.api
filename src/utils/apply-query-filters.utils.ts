@@ -2,7 +2,7 @@ import type { ObjectLiteral, SelectQueryBuilder } from 'typeorm';
 
 import { isNullableValue } from './is-nullable-value.util';
 
-export type FilterTypes = 'LIKE' | '=' | '<' | '>' | '<=' | '>=';
+export type DbExpression = 'LIKE' | '=' | '<' | '>' | '<=' | '>=';
 export type Filter<E extends ObjectLiteral> = Record<
   keyof E,
   Maybe<string | number | Date | boolean>
@@ -12,7 +12,7 @@ export function applyQueryFilters<
   Alias extends string,
   Entity extends ObjectLiteral,
   Filters extends Partial<Filter<Entity>>,
-  FilterType extends Record<keyof Filters, FilterTypes>,
+  FilterType extends Record<keyof Filters, DbExpression>,
 >(
   alias: Alias,
   queryBuilder: SelectQueryBuilder<Entity>,
@@ -31,7 +31,7 @@ export function applyQueryFilters<
     if (isNullableValue(value)) continue;
 
     const stringfyedFilterKey = String(filter);
-    const filterType = filters_types[filter] as FilterTypes;
+    const filterType = filters_types[filter] as DbExpression;
     const parameterKey = `${stringfyedFilterKey}_${index}`;
     const aliasWithFilter = `${alias}.${stringfyedFilterKey}`;
     const condition = `${filterType === 'LIKE' ? `LOWER(${aliasWithFilter})` : aliasWithFilter} ${filterType} :${parameterKey}`;
@@ -120,14 +120,14 @@ export function applyBetweenFilters<
       alias,
       queryBuilder,
       { [field]: start } as Partial<Filter<E>>,
-      { [field]: '>=' as FilterTypes } as Record<keyof E, FilterTypes>,
+      { [field]: '>=' as DbExpression } as Record<keyof E, DbExpression>,
     );
   } else if (end) {
     applyQueryFilters(
       alias,
       queryBuilder,
       { [field]: end } as Partial<Filter<E>>,
-      { [field]: '<=' as FilterTypes } as Record<keyof E, FilterTypes>,
+      { [field]: '<=' as DbExpression } as Record<keyof E, DbExpression>,
     );
   }
 
