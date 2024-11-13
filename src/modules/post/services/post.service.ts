@@ -178,6 +178,8 @@ export class PostService {
   async handleDeleteUserLikes(user_id: string) {
     const likes = await this.postLikeService.getUsersPostLikes(user_id);
 
+    if (!likes.length) return;
+
     await Promise.all(
       likes.map((like) =>
         this.updateCounts(like.post as Post, 'likes_count', 'decrement'),
