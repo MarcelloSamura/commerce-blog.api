@@ -55,7 +55,7 @@ export const stringToFloatSchema = stringSchema
     },
     { message: 'Value must be float' },
   )
-  .transform(Number);
+  .transform((value) => parseFloat(value));
 
 export const paginationParamSchema = z
   .union([stringSchema, integerNumberSchema])
