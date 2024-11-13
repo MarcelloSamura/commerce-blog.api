@@ -70,7 +70,7 @@ export class User extends Base {
     if (new_password) {
       if (!previous_password) {
         throw new BadRequestError(
-          'Previous password is required when setting a new password.',
+          'A senha anterior é necessária ao definir uma nova senha.',
         );
       }
 
@@ -84,7 +84,7 @@ export class User extends Base {
       );
 
       if (!isMatch)
-        throw new BadRequestError('Previous password is incorrect.');
+        throw new BadRequestError('A senha anterior está incorreta.');
 
       userItem.hashed_password =
         await this.handleCreateHashedPassword(new_password);
