@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import {
   applyQueryFilters,
-  applyOrderByFilters,
+  applySortingFilter,
 } from '../../../utils/apply-query-filters.utils';
 import { PostService } from 'src/modules/post/services/post.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
@@ -98,7 +98,7 @@ export class PostCommentService {
       true,
     );
 
-    applyOrderByFilters(alias, queryBuilder, sort);
+    applySortingFilter(alias, queryBuilder, sort);
 
     if (skip) queryBuilder.skip(skip);
 

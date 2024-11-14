@@ -10,7 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import {
   applyQueryFilters,
-  applyOrderByFilters,
+  applySortingFilter,
 } from '../../../utils/apply-query-filters.utils';
 import { PostLikeService } from '../../post-like/services/post-like.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
@@ -70,7 +70,7 @@ export class PostService {
       title: 'LIKE',
     });
 
-    applyOrderByFilters(alias, queryBuilder, sort);
+    applySortingFilter(alias, queryBuilder, sort);
 
     const { items, meta } =
       await this.paginationService.paginateWithQueryBuilder(queryBuilder, {
