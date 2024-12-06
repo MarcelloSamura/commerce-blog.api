@@ -33,6 +33,11 @@ export class PostComments1730468452297 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'replies_count',
+            type: 'int',
+            default: 0,
+          },
+          {
             name: 'parent_id',
             type: 'uuid',
             isNullable: true,
