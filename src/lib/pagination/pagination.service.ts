@@ -33,7 +33,7 @@ export class PaginationService {
   public async paginateWithQueryBuilder<T extends ObjectLiteral>(
     queryBuilder: SelectQueryBuilder<T>,
     { limit, page, ...options }: PaginationArgs,
-  ): Promise<Pagination<T, IPaginationMeta>> {
+  ): Promise<PaginatedResult<T>> {
     return paginate<T>(queryBuilder, {
       ...options,
       limit,

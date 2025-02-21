@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { IPaginationOptions } from 'nestjs-typeorm-paginate';
+import type {
+  IPaginationOptions,
+  Pagination,
+  IPaginationMeta,
+} from 'nestjs-typeorm-paginate';
 
 import type { EnvType } from 'src/config/env.config';
 
@@ -49,6 +53,8 @@ declare global {
       limit: number;
       page: number;
     };
+
+  export type PaginatedResult<T> = Pagination<T, IPaginationMeta>;
 
   type NonNullableObject<Obj extends object> = {
     [K in keyof Obj as Obj[K] extends null | undefined

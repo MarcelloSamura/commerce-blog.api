@@ -4,10 +4,6 @@ import { Post } from '../../post/entities/post.entity';
 import { Base } from '../../../lib/database/entities/base.entity';
 import { PostLike } from '../../post-like/entities/post-like.entity';
 import { PostComment } from '../../post-comment/entities/post-comment.entity';
-import { BadRequestError } from '../../../lib/http-exceptions/errors/types/bad-request-error';
-
-import type { UpdateUserPayload } from '../dtos/update-user.dto';
-import type { CreateUserPayload } from '../dtos/create-user.dto';
 
 @Entity('users')
 export class User extends Base {
@@ -40,60 +36,6 @@ export class User extends Base {
 
   @OneToMany(() => PostComment, (postC) => postC.commented_by)
   comments: PostComment[];
-
-  private static async handleCreateHashedPassword(
-    password: string,
-  ): Promise<string> {
-    return import('../../../utils/password.utils').then(
-      ({ createHashedPassword }) => createHashedPassword(password),
-    );
-  }
-
-  static async create({ password, ...payload }: CreateUserPayload) {
-    const userItem = new User();
-
-    const hashed_password = password
-      ? await this.handleCreateHashedPassword(password)
-      : null;
-
-    Object.assign(userItem, { ...payload, hashed_password });
-
-    return userItem;
-  }
-
-  static async update(
-    { new_password, previous_password, ...payload }: UpdateUserPayload,
-    database_password: string,
-  ) {
-    const userItem = new User();
-
-    if (new_password) {
-      if (!previous_password) {
-        throw new BadRequestError(
-          'A senha anterior é necessária ao definir uma nova senha.',
-        );
-      }
-
-      const { validatePassword } = await import(
-        '../../../utils/password.utils'
-      );
-
-      const isMatch = await validatePassword(
-        previous_password,
-        database_password,
-      );
-
-      if (!isMatch)
-        throw new BadRequestError('A senha anterior está incorreta.');
-
-      userItem.hashed_password =
-        await this.handleCreateHashedPassword(new_password);
-    }
-
-    Object.assign(userItem, payload);
-
-    return userItem;
-  }
 }
 
 export const alias = 'user';
