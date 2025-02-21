@@ -36,6 +36,9 @@ export class PostComment extends Base {
   @Column('uuid', { nullable: true, default: null })
   parent_id: NullableValue<string>;
 
+  @Column('int', { default: 0 })
+  replies_count: number;
+
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: 'commented_by_id' })
   commented_by: User;
@@ -86,6 +89,7 @@ export const base_select_fields = [
   'post-comment.updated_at',
   'post-comment.parent_id',
   'post-comment.post_id',
+  'post-comment.replies_count',
   'commented_by.id',
   'commented_by.user_photo_url',
   'commented_by.user_name',
@@ -100,6 +104,7 @@ export const base_select_fields_with_post = [
   'post.id',
   'post.comments_count',
   'post-comment.commented_by_id',
+  'post-comment.replies_count',
   'post-comment.created_at',
 ] satisfies PostCommentSelectKeyWithPost[];
 

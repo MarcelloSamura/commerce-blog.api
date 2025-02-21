@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import {
   applyQueryFilters,
-  applyOrderByFilters,
+  applySortingFilter,
 } from '../../../utils/apply-query-filters.utils';
 import { PostService } from 'src/modules/post/services/post.service';
 import { PaginationService } from '../../../lib/pagination/pagination.service';
@@ -98,7 +98,7 @@ export class PostCommentService {
       true,
     );
 
-    applyOrderByFilters(alias, queryBuilder, sort);
+    applySortingFilter(alias, queryBuilder, sort);
 
     if (skip) queryBuilder.skip(skip);
 
@@ -151,9 +151,25 @@ export class PostCommentService {
         }),
       ),
       this.postService.updateCounts(post, 'comments_count', 'increment'),
+      parentComment
+        ? this.updatePostCommentRepliesCount(parentComment, 'increment')
+        : undefined,
     ]);
 
     return savedPostComment;
+  }
+
+  async updatePostCommentRepliesCount(
+    postComment: PostComment,
+    type: CountHandler,
+  ) {
+    if (postComment.replies_count === 0 && type === 'decrement') return;
+
+    postComment.replies_count += type === 'increment' ? 1 : -1;
+
+    return this.postCommentRepository.update(postComment.id, {
+      replies_count: postComment.replies_count,
+    });
   }
 
   async updatePostComment(
@@ -178,6 +194,14 @@ export class PostCommentService {
       logged_in_user_id,
       true,
     );
+
+    if (postComment.parent_id) {
+      const parentComment = await this.getPostCommentById(
+        postComment.parent_id,
+      );
+
+      await this.updatePostCommentRepliesCount(parentComment, 'decrement');
+    }
 
     const [removeResult] = await Promise.all([
       this.postCommentRepository.remove(postComment),

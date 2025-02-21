@@ -36,12 +36,6 @@ export function applyQueryFilters<
     const aliasWithFilter = `${alias}.${stringfyedFilterKey}`;
     const condition = `${filterType === 'LIKE' ? `LOWER(${aliasWithFilter})` : aliasWithFilter} ${filterType} :${parameterKey}`;
 
-    if (!filterType) {
-      throw new Error(
-        `Invalid filter type provided for filter: ${stringfyedFilterKey}`,
-      );
-    }
-
     queryBuilder[
       index === 0 && !isFirstConditionAndWhere ? 'where' : 'andWhere'
     ](condition, {
@@ -63,7 +57,7 @@ export type Order<E extends ObjectLiteral> =
   | `${Extract<keyof E, string | number>}.${OrderBy}`
   | string;
 
-export function applyOrderByFilters<T extends string, E extends ObjectLiteral>(
+export function applySortingFilter<T extends string, E extends ObjectLiteral>(
   alias: T,
   queryBuilder: SelectQueryBuilder<E>,
   sort: Maybe<Order<E>>,
@@ -77,7 +71,7 @@ export function applyOrderByFilters<T extends string, E extends ObjectLiteral>(
 
   if (
     !queryBuilder.expressionMap.mainAlias?.metadata.findColumnWithPropertyPath(
-      column as string,
+      column.toString(),
     )
   ) {
     return;
@@ -98,10 +92,13 @@ export interface BetweenFilters<DateVal = Maybe<string | Date>> {
 export function applyBetweenFilters<
   Alias extends string,
   E extends ObjectLiteral,
+  ValidField extends {
+    [K in keyof E]: E[K] extends Maybe<Date | string | number> ? K : never;
+  }[keyof E],
 >(
   alias: Alias,
   queryBuilder: SelectQueryBuilder<E>,
-  field: keyof E,
+  field: ValidField,
   { end, start, isAndWhere = true }: BetweenFilters,
 ) {
   if (end && start) {
