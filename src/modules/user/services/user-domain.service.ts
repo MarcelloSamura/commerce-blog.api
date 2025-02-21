@@ -8,10 +8,14 @@ import type { UpdateUserPayload } from '../dtos/update-user.dto';
 
 @Injectable()
 export class UserDomainService {
+  private async importPasswordUtils() {
+    return import('../../../utils/password.utils').then((data) => data);
+  }
+
   private async handleCreateHashedPassword(password: string): Promise<string> {
-    return import('../../../utils/password.utils').then(
-      ({ createHashedPassword }) => createHashedPassword(password),
-    );
+    const { createHashedPassword } = await this.importPasswordUtils();
+
+    return createHashedPassword(password);
   }
 
   public async createUserEntity({
@@ -42,9 +46,7 @@ export class UserDomainService {
         );
       }
 
-      const { validatePassword } = await import(
-        '../../../utils/password.utils'
-      );
+      const { validatePassword } = await this.importPasswordUtils()
 
       const isMatch = await validatePassword(
         previous_password,
