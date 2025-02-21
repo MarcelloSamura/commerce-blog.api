@@ -55,8 +55,8 @@ export class UserService {
   }
 
   private async getUserAndCheckPermission(
-    id: string,
-    logged_in_user_id: string,
+    id: User['id'],
+    logged_in_user_id: User['id'],
   ) {
     const user = await this.getUserById(id);
 
@@ -72,9 +72,9 @@ export class UserService {
   }
 
   async updateUser(
-    id: string,
+    id: User['id'],
     payload: UpdateUserPayload,
-    logged_in_user_id: string,
+    logged_in_user_id: User['id'],
   ) {
     const userToUpdate = await this.getUserAndCheckPermission(
       id,
@@ -93,7 +93,7 @@ export class UserService {
     return this.userRepository.update(userToUpdate.id, userItem);
   }
 
-  async deleteUser(id: string, logged_in_user_id: string) {
+  async deleteUser(id: User['id'], logged_in_user_id: User['id']) {
     const userToDelete = await this.getUserAndCheckPermission(
       id,
       logged_in_user_id,
