@@ -68,7 +68,7 @@ export class UserService {
   async createUser(payload: CreateUserPayload) {
     const userToCreate = await this.userDomainService.createUserEntity(payload);
 
-    return this.userRepository.save(userToCreate);
+    return this.userRepository.saveUser(userToCreate);
   }
 
   async updateUser(
@@ -119,7 +119,7 @@ export class UserService {
         userToDelete.user_photo_url
           ? del(userToDelete.user_photo_url)
           : undefined,
-        this.userRepository.delete(userToDelete.id),
+        this.userRepository.deleteUserById(userToDelete.id),
         this.postService.handleDeleteUserLikes(userToDelete.id),
       ]);
 

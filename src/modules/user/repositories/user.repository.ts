@@ -1,6 +1,11 @@
+import {
+  type Repository,
+  type UpdateResult,
+  type SelectQueryBuilder,
+  type DeleteResult,
+} from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, type SelectQueryBuilder } from 'typeorm';
 
 import {
   applyQueryFilters,
@@ -83,5 +88,20 @@ export class UserRepository extends Repository<User> {
       limit,
       page,
     });
+  }
+
+  public async saveUser(user: User): Promise<User> {
+    return this.save(user);
+  }
+
+  public async updateUser(
+    id: User['id'],
+    userItem: Partial<User>,
+  ): Promise<UpdateResult> {
+    return this.update(id, userItem);
+  }
+
+  public async deleteUserById(id: User['id']): Promise<DeleteResult> {
+    return this.delete(id);
   }
 }
