@@ -1,5 +1,5 @@
 import {
-  type Repository,
+  Repository,
   type UpdateResult,
   type SelectQueryBuilder,
   type DeleteResult,

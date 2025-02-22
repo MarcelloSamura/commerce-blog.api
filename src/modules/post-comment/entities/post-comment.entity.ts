@@ -23,18 +23,18 @@ export const postCommentContentMaxLength = 2500;
 export class PostComment extends Base {
   @Index()
   @Column('uuid')
-  commented_by_id: string;
+  commented_by_id: User['id'];
 
   @Column('varchar', { length: postCommentContentMaxLength })
   content: string;
 
   @Index()
   @Column('uuid')
-  post_id: string;
+  post_id: Post['id'];
 
   @Index()
   @Column('uuid', { nullable: true, default: null })
-  parent_id: NullableValue<string>;
+  parent_id: NullableValue<PostComment['id']>;
 
   @Column('int', { default: 0 })
   replies_count: number;

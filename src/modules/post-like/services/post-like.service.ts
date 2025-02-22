@@ -4,128 +4,61 @@ import {
   forwardRef,
   ForbiddenException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  applyQueryFilters,
-  applySortingFilter,
-} from '../../../utils/apply-query-filters.utils';
+import type { Post } from 'src/modules/post/entities/post.entity';
+import type { User } from 'src/modules/user/entities/user.entity';
+
 import { PostService } from '../../post/services/post.service';
-import { PaginationService } from '../../../lib/pagination/pagination.service';
-import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
 
-import {
-  alias,
-  PostLike,
-  postAlias,
-  base_select_fields,
-  base_select_fields_with_join,
-  type PostLikeSelectKeyWithJoin,
-} from '../entities/post-like.entity';
+import { PostLike } from '../entities/post-like.entity';
+import { PostLikeDomainService } from './post-like-domain.service';
+import { PostLikeRepository } from '../repositories/post-like.repository';
 import type { PaginatePostLikesPayload } from '../dtos/paginate-post-likes.dto';
 
 @Injectable()
 export class PostLikeService {
   constructor(
-    @InjectRepository(PostLike)
-    private readonly postLikeRepository: Repository<PostLike>,
-    private readonly paginationService: PaginationService,
+    private readonly postLikeRepository: PostLikeRepository,
+    private readonly postLikeDomainService: PostLikeDomainService,
     @Inject(forwardRef(() => PostService))
     private readonly postService: PostService,
   ) {}
 
-  private createPostLikesQueryBuilder(withJoin = false) {
-    const baseQueryBuilder = this.postLikeRepository.createQueryBuilder(alias);
-
-    if (withJoin) {
-      return baseQueryBuilder
-        .leftJoinAndSelect(`${alias}.${postAlias}`, postAlias)
-        .select(base_select_fields_with_join);
-    }
-
-    return baseQueryBuilder.select(base_select_fields);
-  }
-
-  async paginatePostLikes({
-    limit,
-    page,
-    sort,
-    ...rest
-  }: PaginatePostLikesPayload) {
-    const queryBuilder = this.createPostLikesQueryBuilder();
-
-    applyQueryFilters(alias, queryBuilder, rest, {
-      post_id: '=',
-      user_id: '=',
-    });
-
-    applySortingFilter(alias, queryBuilder, sort);
-
-    return this.paginationService.paginateWithQueryBuilder(queryBuilder, {
-      limit,
-      page,
-    });
+  async paginatePostLikes(data: PaginatePostLikesPayload) {
+    return this.postLikeRepository.paginatePostLikes(data);
   }
 
   async getPostLikesByPostIdsAndUserId(
-    post_ids: string[],
-    logged_in_user_id: string,
+    post_ids: Post['id'][],
+    logged_in_user_id: User['id'],
   ) {
-    const postLikes = await this.createPostLikesQueryBuilder()
-      .where(`${alias}.post_id IN (:...post_ids)`, { post_ids })
-      .andWhere(`${alias}.user_id = :logged_in_user_id`, { logged_in_user_id })
-      .take(post_ids.length)
-      .getMany();
-
-    return postLikes;
+    return this.postLikeRepository.getPostLikesByPostIdsAndUserId(
+      post_ids,
+      logged_in_user_id,
+    );
   }
 
   async getPostLikeByPostIdAndUserId(
-    post_id: string,
-    user_id: string,
+    post_id: Post['id'],
+    user_id: User['id'],
     withJoin = false,
   ) {
-    const queryBuilder = this.createPostLikesQueryBuilder(withJoin);
-
-    applyQueryFilters(
-      alias,
-      queryBuilder,
-      { post_id, user_id },
-      {
-        post_id: '=',
-        user_id: '=',
-      },
+    return this.postLikeRepository.getPostLikeByPostIdAndUserId(
+      post_id,
+      user_id,
+      withJoin,
     );
-
-    return queryBuilder.getOne();
   }
 
-  async getUsersPostLikes(user_id: string) {
-    const result = await this.postLikeRepository
-      .createQueryBuilder(alias)
-      .leftJoinAndSelect(`${alias}.${postAlias}`, `${postAlias}`)
-      .where(`${alias}.user_id = :user_id`, { user_id })
-      .select([
-        `${postAlias}.id`,
-        `${postAlias}.likes_count`,
-      ] as PostLikeSelectKeyWithJoin[])
-      .getMany();
-
-    return result as { post: { likes_count: number; id: string } }[];
+  async getUsersPostLikes(user_id: User['id']) {
+    return this.postLikeRepository.getUsersPostLikes(user_id);
   }
 
-  async getPostLikeById(id: string): Promise<PostLike> {
-    const postLike = await this.createPostLikesQueryBuilder()
-      .where(`${alias}.id = :id`, { id })
-      .getOne();
-
-    if (!postLike) throw new NotFoundError('Post like not found');
-
-    return postLike;
+  async getPostLikeById(id: PostLike['id']) {
+    return this.postLikeRepository.getPostLikeById(id);
   }
 
-  async likePost(post_id: string, logged_in_user_id: string) {
+  async likePost(post_id: Post['id'], logged_in_user_id: User['id']) {
     const wasPostLiked = await this.getPostLikeByPostIdAndUserId(
       post_id,
       logged_in_user_id,
@@ -139,39 +72,37 @@ export class PostLikeService {
       throw new ForbiddenException('Não pode gostar do próprio post');
     }
 
+    const postLikeToCreate = this.postLikeDomainService.createPostLikeEntity({
+      post_id: post.id,
+      user_id: logged_in_user_id,
+    });
+
     const [savedPostLike] = await Promise.all([
-      this.postLikeRepository.save(
-        PostLike.create({ post_id: post.id, user_id: logged_in_user_id }),
-      ),
+      this.postLikeRepository.savePostLike(postLikeToCreate),
       this.postService.updateCounts(post, 'likes_count', 'increment'),
     ]);
 
     return savedPostLike;
   }
 
-  private async deleteLike(postLike: PostLike, user_id: string) {
+  private async deleteLike(postLike: PostLike, user_id: User['id']) {
     if (postLike.user_id !== user_id) throw new ForbiddenException('Proíbido');
 
     return this.postLikeRepository.remove(postLike);
   }
 
-  async removeLike(post_id: string, logged_in_user_id: string) {
-    const wasPostLiked = await this.getPostLikeByPostIdAndUserId(
+  async removeLike(post_id: Post['id'], logged_in_user_id: User['id']) {
+    const likedPost = await this.getPostLikeByPostIdAndUserId(
       post_id,
       logged_in_user_id,
       true,
     );
 
-    if (!wasPostLiked)
-      throw new ForbiddenException('Post ainda não foi gostado');
+    if (!likedPost) throw new ForbiddenException('Post ainda não foi gostado');
 
     const [deleteResult] = await Promise.all([
-      this.deleteLike(wasPostLiked, logged_in_user_id),
-      this.postService.updateCounts(
-        wasPostLiked.post,
-        'likes_count',
-        'decrement',
-      ),
+      this.deleteLike(likedPost, logged_in_user_id),
+      this.postService.updateCounts(likedPost.post, 'likes_count', 'decrement'),
     ]);
 
     return deleteResult;

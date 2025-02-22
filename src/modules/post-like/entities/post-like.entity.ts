@@ -10,11 +10,11 @@ import type { CreateLike } from '../dtos/create-like.dto';
 export class PostLike extends Base {
   @Index()
   @Column('uuid')
-  post_id: string;
+  post_id: Post['id'];
 
   @Index()
   @Column('uuid')
-  user_id: string;
+  user_id: User['id'];
 
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: 'user_id' })
@@ -23,14 +23,6 @@ export class PostLike extends Base {
   @ManyToOne(() => Post, (post) => post)
   @JoinColumn({ name: 'post_id' })
   post: Post;
-
-  static create(payload: CreateLike) {
-    const item = new PostLike();
-
-    Object.assign(item, payload);
-
-    return item;
-  }
 }
 
 export const alias = 'post-like';

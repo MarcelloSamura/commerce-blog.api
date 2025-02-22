@@ -34,7 +34,7 @@ export class Post extends Base {
 
   @Index()
   @Column('uuid')
-  author_id: string;
+  author_id: User['id'];
 
   @Index()
   @Column('int', { default: 0 })

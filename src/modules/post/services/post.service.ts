@@ -163,7 +163,7 @@ export class PostService {
 
   async updateCounts(
     post: Post,
-    key: 'likes_count' | 'comments_count',
+    key: keyof Pick<Post, 'comments_count' | 'likes_count'>,
     type: CountHandler,
   ) {
     if (post[key] === 0 && type === 'decrement') return;
