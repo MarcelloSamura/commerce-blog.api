@@ -1,13 +1,13 @@
 services:
   db:
     image: postgres
+    restart: always
     environment:
       POSTGRES_DB: ${DATABASE_DATABASE_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DATABASE_ROOT_PASSWORD}
-      TZ: 'America/Campo_Grande'
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT}:${DB_PORT}"
     networks:
       - my_network
   # redis-bull:

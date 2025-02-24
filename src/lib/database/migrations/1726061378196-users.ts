@@ -15,7 +15,7 @@ export class Users1726061378196 implements MigrationInterface {
           },
           {
             name: 'hashed_password',
-            type: 'varchar',
+            type: 'varchar(255)',
           },
           {
             name: 'user_email',

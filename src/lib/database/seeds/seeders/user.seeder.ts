@@ -2,8 +2,8 @@
 import { DataSource } from 'typeorm';
 import { type Seeder, SeederFactoryManager } from 'typeorm-extension';
 
-import { User } from '../../../../modules/user/entities/user.entity';
-import { createHashedPassword } from '../../../../utils/password.utils';
+import { User } from 'src/modules/user/entities/user.entity';
+import { createHashedPassword } from 'src/utils/password.utils';
 
 export default class UserSeeder implements Seeder {
   track = false;

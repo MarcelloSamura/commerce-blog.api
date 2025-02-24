@@ -11,7 +11,7 @@ export class User extends Base {
   @Column('varchar')
   user_name: string;
 
-  @Column('varchar')
+  @Column('varchar', { length: 255 })
   hashed_password: string;
 
   @Index()
