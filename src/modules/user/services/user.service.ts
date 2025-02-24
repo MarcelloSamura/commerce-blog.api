@@ -38,7 +38,7 @@ export class UserService {
     return user;
   }
 
-  async getUserById(id: User['id'], selectPassword?: boolean) {
+  async getUserById(id: User['id'], selectPassword = false) {
     const user = await this.userRepository.findUserById(id, selectPassword);
 
     if (!user) throw new NotFoundException('User not found!');
