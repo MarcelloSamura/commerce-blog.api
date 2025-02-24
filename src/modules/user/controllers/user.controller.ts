@@ -36,7 +36,7 @@ export class UserController {
 
   @Public()
   @Get(':id')
-  async getOne(@UuidParam('id') id: string) {
+  async getOne(@UuidParam('id') id: User['id']) {
     return this.userService.getUserById(id, false);
   }
 
@@ -50,7 +50,7 @@ export class UserController {
   @DataBaseInterceptorDecorator()
   @Put(':id')
   async update(
-    @UuidParam('id') id: string,
+    @UuidParam('id') id: User['id'],
     @Body() payload: UpdateUserDTO,
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
@@ -59,7 +59,7 @@ export class UserController {
 
   @Delete(':id')
   async delete(
-    @UuidParam('id') id: string,
+    @UuidParam('id') id: User['id'],
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.userService.deleteUser(id, logged_in_user_id);

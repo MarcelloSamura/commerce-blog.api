@@ -16,6 +16,7 @@ import { UuidParam } from '../../../shared/decorators/uuid-param.decorator';
 import { ApiPaginationQuery } from '../../../shared/decorators/api-pagination-query.decorator';
 import { LoggedInUserIdDecorator } from '../../../shared/decorators/logged-in-user-id.decorator';
 
+import type { PostComment } from '../entities/post-comment.entity';
 import { PostCommentService } from '../services/post-comment.service';
 import { CreatePostCommentDTO } from '../dtos/create-post-comment.dto';
 import { UpdatePostCommentDTO } from '../dtos/update-post-comment.dto';
@@ -34,7 +35,7 @@ export class PostCommentController {
   }
 
   @Get(':id')
-  getOne(@UuidParam('id') id: string) {
+  getOne(@UuidParam('id') id: PostComment['id']) {
     return this.postCommentService.getPostCommentById(id);
   }
 
@@ -48,7 +49,7 @@ export class PostCommentController {
 
   @Put(':id')
   update(
-    @UuidParam('id') id: string,
+    @UuidParam('id') id: PostComment['id'],
     @Body() body: UpdatePostCommentDTO,
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
@@ -61,7 +62,7 @@ export class PostCommentController {
 
   @Delete(':id')
   delete(
-    @UuidParam('id') id: string,
+    @UuidParam('id') id: PostComment['id'],
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postCommentService.deletePostComment(id, logged_in_user_id);

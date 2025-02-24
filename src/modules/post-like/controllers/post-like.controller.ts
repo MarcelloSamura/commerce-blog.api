@@ -1,6 +1,13 @@
 import { ApiTags } from '@nestjs/swagger';
-import { Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Post as PostRequest,
+  Query,
+} from '@nestjs/common';
 
+import type { Post } from 'src/modules/post/entities/post.entity';
 import type { User } from 'src/modules/user/entities/user.entity';
 
 import { Public } from '../../../shared/decorators/auth.decorator';
@@ -23,9 +30,9 @@ export class PostLikeController {
     return this.postLikeService.paginatePostLikes(queries);
   }
 
-  @Post(':post_id')
+  @PostRequest(':post_id')
   like(
-    @UuidParam('post_id') post_id: string,
+    @UuidParam('post_id') post_id: Post['id'],
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postLikeService.likePost(post_id, logged_in_user_id);
@@ -33,7 +40,7 @@ export class PostLikeController {
 
   @Delete(':post_id')
   dislike(
-    @UuidParam('post_id') post_id: string,
+    @UuidParam('post_id') post_id: Post['id'],
     @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postLikeService.removeLike(post_id, logged_in_user_id);
