@@ -15,6 +15,7 @@ import { ApiPaginationQuery } from '../../../shared/decorators/api-pagination-qu
 import { LoggedInUserIdDecorator } from '../../../shared/decorators/logged-in-user-id.decorator';
 import { DataBaseInterceptorDecorator } from '../../../shared/decorators/database-interceptor.decorator';
 
+import type { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { UpdateUserDTO } from '../dtos/update-user.dto';
@@ -51,7 +52,7 @@ export class UserController {
   async update(
     @UuidParam('id') id: string,
     @Body() payload: UpdateUserDTO,
-    @LoggedInUserIdDecorator() logged_in_user_id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.userService.updateUser(id, payload, logged_in_user_id);
   }
@@ -59,7 +60,7 @@ export class UserController {
   @Delete(':id')
   async delete(
     @UuidParam('id') id: string,
-    @LoggedInUserIdDecorator() logged_in_user_id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.userService.deleteUser(id, logged_in_user_id);
   }

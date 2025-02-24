@@ -1,16 +1,12 @@
-import {
-  type IPaginationMeta,
-  Pagination,
-  paginate,
-} from 'nestjs-typeorm-paginate';
-import { Injectable } from '@nestjs/common';
-import {
-  type ObjectLiteral,
+import type {
+  ObjectLiteral,
   Repository,
-  type FindOptionsWhere,
-  type FindManyOptions,
+  FindOptionsWhere,
+  FindManyOptions,
   SelectQueryBuilder,
 } from 'typeorm';
+import { Injectable } from '@nestjs/common';
+import { paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PaginationService {
@@ -18,7 +14,7 @@ export class PaginationService {
     entityRepository: Repository<T>,
     { limit, page, ...options }: PaginationArgs,
     searchOptions?: FindOptionsWhere<T> | FindManyOptions<T>,
-  ): Promise<Pagination<T, IPaginationMeta>> {
+  ): Promise<PaginatedResult<T>> {
     return paginate<T>(
       entityRepository,
       {

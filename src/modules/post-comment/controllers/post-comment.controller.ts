@@ -9,6 +9,8 @@ import {
   Query,
 } from '@nestjs/common';
 
+import type { User } from 'src/modules/user/entities/user.entity';
+
 import { Public } from '../../../shared/decorators/auth.decorator';
 import { UuidParam } from '../../../shared/decorators/uuid-param.decorator';
 import { ApiPaginationQuery } from '../../../shared/decorators/api-pagination-query.decorator';
@@ -39,7 +41,7 @@ export class PostCommentController {
   @Post('')
   create(
     @Body() body: CreatePostCommentDTO,
-    @LoggedInUserIdDecorator() logged_in_user_id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postCommentService.createPostComment(body, logged_in_user_id);
   }
@@ -48,7 +50,7 @@ export class PostCommentController {
   update(
     @UuidParam('id') id: string,
     @Body() body: UpdatePostCommentDTO,
-    @LoggedInUserIdDecorator() logged_in_user_id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postCommentService.updatePostComment(
       id,
@@ -60,7 +62,7 @@ export class PostCommentController {
   @Delete(':id')
   delete(
     @UuidParam('id') id: string,
-    @LoggedInUserIdDecorator() logged_in_user_id: string,
+    @LoggedInUserIdDecorator() logged_in_user_id: User['id'],
   ) {
     return this.postCommentService.deletePostComment(id, logged_in_user_id);
   }

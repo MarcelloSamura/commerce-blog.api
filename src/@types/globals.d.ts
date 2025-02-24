@@ -6,6 +6,7 @@ import type {
 } from 'nestjs-typeorm-paginate';
 
 import type { EnvType } from 'src/config/env.config';
+import type { User } from 'src/modules/user/entities/user.entity';
 
 declare global {
   namespace NodeJS {
@@ -38,7 +39,7 @@ declare global {
   > = T extends `${Prefix}${infer Rest}` ? Rest : T;
 
   export interface IJwtPayload {
-    id: string;
+    id: User['id'];
   }
 
   export interface DecodedTokenType extends IJwtPayload {

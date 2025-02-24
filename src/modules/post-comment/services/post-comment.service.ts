@@ -1,28 +1,16 @@
-import { Repository } from 'typeorm';
 import {
   ForbiddenException,
   forwardRef,
   Inject,
   Injectable,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 
-import {
-  applyQueryFilters,
-  applySortingFilter,
-} from '../../../utils/apply-query-filters.utils';
 import { PostService } from 'src/modules/post/services/post.service';
-import { PaginationService } from '../../../lib/pagination/pagination.service';
-import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
+import type { User } from 'src/modules/user/entities/user.entity';
 
-import {
-  alias,
-  PostComment,
-  commented_by_alias,
-  base_select_fields,
-  postAlias,
-  base_select_fields_with_post,
-} from '../entities/post-comment.entity';
+import type { PostComment } from '../entities/post-comment.entity';
+import { PostCommentDomainService } from './post-comment-domain.service';
+import { PostCommentRepository } from '../repositories/post-comment.repository';
 import type { UpdatePostCommentPayload } from '../dtos/update-post-comment.dto';
 import type { CreatePostCommentPayload } from '../dtos/create-post-comment.dto';
 import type { PaginatePostCommentsPayload } from '../dtos/paginate-post-comments.dto';
@@ -30,26 +18,11 @@ import type { PaginatePostCommentsPayload } from '../dtos/paginate-post-comments
 @Injectable()
 export class PostCommentService {
   constructor(
-    private readonly paginationService: PaginationService,
-    @InjectRepository(PostComment)
-    private readonly postCommentRepository: Repository<PostComment>,
+    private readonly postCommentDomainService: PostCommentDomainService,
+    private readonly postCommentRepository: PostCommentRepository,
     @Inject(forwardRef(() => PostService))
     private readonly postService: PostService,
   ) {}
-
-  private createPostCommentQueryBuilder() {
-    return this.postCommentRepository
-      .createQueryBuilder(alias)
-      .leftJoinAndSelect(`${alias}.${commented_by_alias}`, commented_by_alias)
-      .select(base_select_fields);
-  }
-
-  private createPostCommentWithPost() {
-    return this.postCommentRepository
-      .createQueryBuilder(alias)
-      .leftJoinAndSelect(`${alias}.${postAlias}`, postAlias)
-      .select(base_select_fields_with_post);
-  }
 
   private checkPermission(postComment: PostComment, logged_in_user_id: string) {
     const commentedById =
@@ -63,78 +36,36 @@ export class PostCommentService {
   }
 
   private async getPostCommentAndCheckPermission(
-    id: string,
-    logged_in_user_id: string,
+    id: PostComment['id'],
+    logged_in_user_id: User['id'],
     withPosts = false,
   ) {
     const postComment = withPosts
-      ? await this.getPostCommentByIdWithRelatedPost(id)
-      : await this.getPostCommentById(id);
+      ? await this.postCommentRepository.getPostCommentByIdWithRelatedPost(id)
+      : await this.postCommentRepository.getPostCommentById(id);
 
     this.checkPermission(postComment, logged_in_user_id);
 
     return postComment;
   }
 
-  async paginatePostComments({
-    limit,
-    page,
-    sort,
-    commented_by_id,
-    skip,
-    ...rest
-  }: PaginatePostCommentsPayload) {
-    const queryBuilder = this.createPostCommentQueryBuilder();
-
-    applyQueryFilters(alias, queryBuilder, rest, {
-      parent_id: '=',
-      post_id: '=',
-    });
-    applyQueryFilters(
-      commented_by_alias,
-      queryBuilder,
-      { id: commented_by_id },
-      { id: '=' },
-      true,
-    );
-
-    applySortingFilter(alias, queryBuilder, sort);
-
-    if (skip) queryBuilder.skip(skip);
-
-    return this.paginationService.paginateWithQueryBuilder(queryBuilder, {
-      page,
-      limit,
-    });
+  async paginatePostComments(data: PaginatePostCommentsPayload) {
+    return this.postCommentRepository.paginatePostComments(data);
   }
 
-  async getPostCommentByIdWithRelatedPost(id: string) {
-    const postComment = await this.createPostCommentWithPost()
-      .where(`${alias}.id = :id`, { id })
-      .getOne();
-
-    if (!postComment) throw new NotFoundError('Comentário inválido');
-
-    return postComment;
-  }
-
-  async getPostCommentById(id: string) {
-    const postComment = await this.createPostCommentQueryBuilder()
-      .where(`${alias}.id = :id`, { id })
-      .getOne();
-
-    if (!postComment) throw new NotFoundError('Comentário inválido');
-
-    return postComment;
+  async getPostCommentById(id: PostComment['id']) {
+    return this.postCommentRepository.getPostCommentById(id);
   }
 
   async createPostComment(
     { post_id, parent_id, content }: CreatePostCommentPayload,
-    logged_in_user_id: string,
+    logged_in_user_id: User['id'],
   ) {
     const [post, parentComment] = await Promise.all([
       this.postService.getPostById(post_id),
-      parent_id ? this.getPostCommentById(parent_id) : undefined,
+      parent_id
+        ? this.postCommentRepository.getPostCommentById(parent_id)
+        : undefined,
     ]);
 
     if (parentComment && parentComment.post_id !== post.id) {
@@ -143,7 +74,7 @@ export class PostCommentService {
 
     const [savedPostComment] = await Promise.all([
       this.postCommentRepository.save(
-        PostComment.create({
+        this.postCommentDomainService.createEntity({
           content,
           post_id: post.id,
           parent_id: parentComment?.id,
@@ -173,9 +104,9 @@ export class PostCommentService {
   }
 
   async updatePostComment(
-    id: string,
+    id: PostComment['id'],
     payload: UpdatePostCommentPayload,
-    logged_in_user_id: string,
+    logged_in_user_id: User['id'],
   ) {
     const postComment = await this.getPostCommentAndCheckPermission(
       id,
@@ -184,11 +115,14 @@ export class PostCommentService {
 
     return this.postCommentRepository.update(
       postComment.id,
-      PostComment.update(payload),
+      this.postCommentDomainService.updateEntity(payload),
     );
   }
 
-  async deletePostComment(id: string, logged_in_user_id: string) {
+  async deletePostComment(
+    id: PostComment['id'],
+    logged_in_user_id: User['id'],
+  ) {
     const postComment = await this.getPostCommentAndCheckPermission(
       id,
       logged_in_user_id,
@@ -196,7 +130,7 @@ export class PostCommentService {
     );
 
     if (postComment.parent_id) {
-      const parentComment = await this.getPostCommentById(
+      const parentComment = await this.postCommentRepository.getPostCommentById(
         postComment.parent_id,
       );
 

@@ -14,9 +14,6 @@ import {
 import { User } from 'src/modules/user/entities/user.entity';
 import { Base } from 'src/lib/database/entities/base.entity';
 
-import type { CreatePostCommentPayload } from '../dtos/create-post-comment.dto';
-import type { UpdatePostCommentPayload } from '../dtos/update-post-comment.dto';
-
 export const postCommentContentMaxLength = 2500;
 
 @Entity('post-comments')
@@ -55,24 +52,6 @@ export class PostComment extends Base {
 
   @OneToMany(() => PostComment, (comment) => comment.parent)
   replies: PostComment[];
-
-  static create(
-    payload: CreatePostCommentPayload & { commented_by_id: string },
-  ) {
-    const item = new PostComment();
-
-    Object.assign(item, payload);
-
-    return item;
-  }
-
-  static update(payload: UpdatePostCommentPayload) {
-    const item = new PostComment();
-
-    Object.assign(item, payload);
-
-    return item;
-  }
 }
 
 export const alias = 'post-comment';
