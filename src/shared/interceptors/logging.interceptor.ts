@@ -13,6 +13,10 @@ import type { Response, Request } from 'express';
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger(LoggingInterceptor.name);
 
+  private calculateExecutionTime(time: number): number {
+    return Date.now() - time;
+  }
+
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest<Request>();
     const response = context.switchToHttp().getResponse<Response>();
@@ -25,15 +29,15 @@ export class LoggingInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap({
         next: () => {
-          const executionTime = Date.now() - now;
-          const statusCode = response.status;
+          const executionTime = this.calculateExecutionTime(now);
+          const statusCode = response.statusCode.toString();
 
           this.logger.log(
             `Request Completed - Method: ${method} | URL: ${url} | Status: ${statusCode} | Time: ${executionTime}ms`,
           );
         },
         error: (error) => {
-          const executionTime = Date.now() - now;
+          const executionTime = this.calculateExecutionTime(now);
           const statusCode = error.status || 500;
 
           this.logger.error(
