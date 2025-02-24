@@ -3,10 +3,10 @@ import {
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { PostService } from '../../post/services/post.service';
-import { NotFoundError } from '../../../lib/http-exceptions/errors/types/not-found-error';
 
 import type { User } from '../entities/user.entity';
 import { UserDomainService } from './user-domain.service';
@@ -33,7 +33,7 @@ export class UserService {
       selectPassword,
     );
 
-    if (!user) throw new NotFoundError('Email is not valid!');
+    if (!user) throw new NotFoundException('Email is not valid!');
 
     return user;
   }
@@ -41,7 +41,7 @@ export class UserService {
   async getUserById(id: User['id'], selectPassword?: boolean) {
     const user = await this.userRepository.findUserById(id, selectPassword);
 
-    if (!user) throw new NotFoundError('User not found!');
+    if (!user) throw new NotFoundException('User not found!');
 
     return user;
   }

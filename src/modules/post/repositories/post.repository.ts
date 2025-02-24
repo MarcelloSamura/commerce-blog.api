@@ -1,6 +1,6 @@
 import { IsNull, Not, Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import {
   applyQueryFilters,
@@ -9,7 +9,6 @@ import {
 import type { User } from 'src/modules/user/entities/user.entity';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
 import { PostLikeService } from 'src/modules/post-like/services/post-like.service';
-import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
   Post,
@@ -112,7 +111,9 @@ export class PostRepository extends Repository<Post> {
     id: Post['id'],
     usePerfomaticSelect: T = false as T,
     logged_in_user_id?: User['id'],
-  ): Promise<T extends true ? Post & { is_liked_by_current_user?: boolean } : Post> {
+  ): Promise<
+    T extends true ? Post & { is_liked_by_current_user?: boolean } : Post
+  > {
     const queryBuilder = this.createPostQueryBuilder(usePerfomaticSelect).where(
       `${alias}.id = :id`,
       { id },
@@ -136,7 +137,7 @@ export class PostRepository extends Repository<Post> {
         : undefined,
     ]);
 
-    if (!post) throw new NotFoundError('Post não encotrado');
+    if (!post) throw new NotFoundException('Post não encotrado');
 
     return (like ? { ...post, is_liked_by_current_user: true } : post) as any;
   }

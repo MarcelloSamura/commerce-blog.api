@@ -3,7 +3,6 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { Public } from '../../../shared/decorators/auth.decorator';
 import { CreateUserDTO } from '../../user/dtos/create-user.dto';
-import { DataBaseInterceptorDecorator } from '../../../shared/decorators/database-interceptor.decorator';
 
 import { LoginDTO } from '../dtos/login.dto';
 import { AccessDTO } from '../dtos/access.dto';
@@ -21,7 +20,6 @@ export class AuthController {
   }
 
   @Public()
-  @DataBaseInterceptorDecorator()
   @Post('register')
   async registerAndLogin(
     @Body() registerDTO: CreateUserDTO,
@@ -29,7 +27,6 @@ export class AuthController {
     return this.authService.registerAndLogin(registerDTO);
   }
 
-  @DataBaseInterceptorDecorator()
   @Public()
   @Post('refresh/:refresh_token')
   refresh(@Param('refresh_token') refresh_token: string) {

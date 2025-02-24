@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import {
   applyQueryFilters,
@@ -9,7 +9,6 @@ import {
 import type { Post } from 'src/modules/post/entities/post.entity';
 import type { User } from 'src/modules/user/entities/user.entity';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
-import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
   PostLike,
@@ -114,7 +113,7 @@ export class PostLikeRepository extends Repository<PostLike> {
       .where(`${alias}.id = :id`, { id })
       .getOne();
 
-    if (!postLike) throw new NotFoundError('Post like not found');
+    if (!postLike) throw new NotFoundException('Post like not found');
 
     return postLike;
   }

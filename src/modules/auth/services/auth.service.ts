@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { validatePassword } from '../../../utils/password.utils';
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
-import { accessTokenConfig, refreshJwtConfig } from '../../../config/jwt.config';
+import {
+  accessTokenConfig,
+  refreshJwtConfig,
+} from '../../../config/jwt.config';
 import type { CreateUserPayload } from '../../user/dtos/create-user.dto';
-import { BadRequestError } from '../../../lib/http-exceptions/errors/types/bad-request-error';
 
 import type { AccessDTO } from '../dtos/access.dto';
 import type { LoginPayload } from '../dtos/login.dto';
@@ -58,9 +60,7 @@ export class AuthService {
       user.hashed_password,
     );
 
-    if (!passwordsMatch) {
-      throw new BadRequestError('Senha incorreta');
-    }
+    if (!passwordsMatch) throw new BadRequestException('Senha incorreta');
   }
 
   private async generateAccessAndRefreshToken(

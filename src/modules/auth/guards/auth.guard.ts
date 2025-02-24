@@ -8,7 +8,6 @@ import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import type { Request } from 'express';
 
-import { LogService } from '../../../lib/log/log.service';
 import { accessTokenConfig } from '../../../config/jwt.config';
 import { IS_PUBLIC_KEY } from '../../../shared/decorators/auth.decorator';
 import { DECODED_TOKEN_KEY } from '../../../shared/decorators/decoded-token.decorator';
@@ -18,7 +17,6 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,
-    private logService: LogService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -30,11 +28,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
 
-    if (!token && !isPublic) {
-      this.logService.logger?.warn('Token is required to access this route');
-
-      throw new UnauthorizedException();
-    }
+    if (!token && !isPublic) throw new UnauthorizedException();
 
     try {
       if (token) {
@@ -50,7 +44,6 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       request[DECODED_TOKEN_KEY] = undefined;
 
-      this.logService.logger?.error('Invalid token', error.stack);
       throw new UnauthorizedException('Invalid Token!');
     }
   }

@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static'
 
-import { LogModule } from './lib/log/log.module';
 import { options } from './lib/database/database.providers';
 import { CommerceBlogModule } from './modules/commerce-blog.module';
 import { PaginationModule } from './lib/pagination/pagination.module';
@@ -21,7 +20,6 @@ import { PaginationModule } from './lib/pagination/pagination.module';
     ScheduleModule.forRoot(),
     CommerceBlogModule,
     PaginationModule,
-    LogModule,
   ],
   providers: [
     {

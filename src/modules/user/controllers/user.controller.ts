@@ -13,7 +13,6 @@ import { Public } from '../../../shared/decorators/auth.decorator';
 import { UuidParam } from '../../../shared/decorators/uuid-param.decorator';
 import { ApiPaginationQuery } from '../../../shared/decorators/api-pagination-query.decorator';
 import { LoggedInUserIdDecorator } from '../../../shared/decorators/logged-in-user-id.decorator';
-import { DataBaseInterceptorDecorator } from '../../../shared/decorators/database-interceptor.decorator';
 
 import type { User } from '../entities/user.entity';
 import { UserService } from '../services/user.service';
@@ -28,7 +27,6 @@ export class UserController {
 
   @Public()
   @ApiPaginationQuery()
-  @DataBaseInterceptorDecorator()
   @Get('paginate')
   async paginate(@Query() querys: PaginateUsersDTO) {
     return this.userService.paginateUsers(querys);
@@ -41,13 +39,11 @@ export class UserController {
   }
 
   @Public()
-  @DataBaseInterceptorDecorator()
   @Post('')
   async create(@Body() body: CreateUserDTO) {
     return this.userService.createUser(body);
   }
 
-  @DataBaseInterceptorDecorator()
   @Put(':id')
   async update(
     @UuidParam('id') id: User['id'],

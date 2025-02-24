@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository, type SelectQueryBuilder } from 'typeorm';
 
 import {
@@ -7,7 +7,6 @@ import {
   applySortingFilter,
 } from 'src/utils/apply-query-filters.utils';
 import { PaginationService } from 'src/lib/pagination/pagination.service';
-import { NotFoundError } from 'src/lib/http-exceptions/errors/types/not-found-error';
 
 import {
   alias,
@@ -77,7 +76,7 @@ export class PostCommentRepository extends Repository<PostComment> {
       .where(`${alias}.id = :id`, { id })
       .getOne();
 
-    if (!postComment) throw new NotFoundError('Comentário inválido');
+    if (!postComment) throw new NotFoundException('Comentário inválido');
 
     return postComment;
   }
@@ -87,7 +86,7 @@ export class PostCommentRepository extends Repository<PostComment> {
       .where(`${alias}.id = :id`, { id })
       .getOne();
 
-    if (!postComment) throw new NotFoundError('Comentário inválido');
+    if (!postComment) throw new NotFoundException('Comentário inválido');
 
     return postComment;
   }

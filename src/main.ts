@@ -4,13 +4,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { corsConfig } from './config/cors.config';
 import { ENV_VARIABLES, IS_DEV_ENV } from './config/env.config';
-import { DataBaseInterceptor } from './lib/http-exceptions/errors/interceptors/database.interceptor';
-import { NotFoundInterceptor } from './lib/http-exceptions/errors/interceptors/not-found.interceptor';
-import { BadRequestInterceptor } from './lib/http-exceptions/errors/interceptors/bad-request.interceptor';
-import { UnauthorizedInterceptor } from './lib/http-exceptions/errors/interceptors/unauthorized.interceptor';
-import { DataSourceInterceptor } from './lib/http-exceptions/errors/interceptors/conction-data-source.interceptor';
+import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
+import { DataBaseInterceptor } from './shared/interceptors/database.interceptor';
 
 async function bootstrap() {
+  Logger.overrideLogger(
+    IS_DEV_ENV
+      ? ['debug', 'log', 'warn', 'error', 'verbose']
+      : ['warn', 'error'],
+  );
+
   const app = await NestFactory.create(AppModule);
 
   try {
@@ -26,11 +29,8 @@ async function bootstrap() {
      * -----------------------------------------------------------------------------
      */
     app.useGlobalInterceptors(
-      new UnauthorizedInterceptor(),
-      new DataSourceInterceptor(),
-      new BadRequestInterceptor(),
-      new NotFoundInterceptor(),
       new DataBaseInterceptor(),
+      new LoggingInterceptor(),
     );
 
     if (IS_DEV_ENV) {

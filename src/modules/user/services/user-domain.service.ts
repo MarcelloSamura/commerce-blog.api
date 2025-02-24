@@ -1,6 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
-import { BadRequestError } from 'src/lib/http-exceptions/errors/types/bad-request-error';
+import {
+  validatePassword,
+  createHashedPassword,
+} from 'src/utils/password.utils';
 
 import { User } from '../entities/user.entity';
 import type { CreateUserPayload } from '../dtos/create-user.dto';
@@ -8,14 +11,15 @@ import type { UpdateUserPayload } from '../dtos/update-user.dto';
 
 @Injectable()
 export class UserDomainService {
-  private async importPasswordUtils() {
-    return import('../../../utils/password.utils').then((data) => data);
+  private async createHashedPassword(password: string): Promise<string> {
+    return createHashedPassword(password);
   }
 
-  private async handleCreateHashedPassword(password: string): Promise<string> {
-    const { createHashedPassword } = await this.importPasswordUtils();
-
-    return createHashedPassword(password);
+  private async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return validatePassword(password, hashedPassword);
   }
 
   public async createUserEntity({
@@ -25,7 +29,7 @@ export class UserDomainService {
     const userItem = new User();
 
     const hashed_password = password
-      ? await this.handleCreateHashedPassword(password)
+      ? await this.createHashedPassword(password)
       : null;
 
     Object.assign(userItem, { ...payload, hashed_password });
@@ -41,23 +45,20 @@ export class UserDomainService {
 
     if (new_password) {
       if (!previous_password) {
-        throw new BadRequestError(
+        throw new BadRequestException(
           'A senha anterior é necessária ao definir uma nova senha.',
         );
       }
 
-      const { validatePassword } = await this.importPasswordUtils()
-
-      const isMatch = await validatePassword(
+      const isMatch = await this.validatePassword(
         previous_password,
         database_password,
       );
 
       if (!isMatch)
-        throw new BadRequestError('A senha anterior está incorreta.');
+        throw new BadRequestException('A senha anterior está incorreta.');
 
-      userItem.hashed_password =
-        await this.handleCreateHashedPassword(new_password);
+      userItem.hashed_password = await this.createHashedPassword(new_password);
     }
 
     Object.assign(userItem, payload);
